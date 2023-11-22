@@ -93,9 +93,9 @@ services:
     pullRequestPreviewsEnabled: true # optional
     buildFilter:
       paths:
-      - src/./app.js
+      - src/app.js
       ignoredPaths:
-      - src/./index.js
+      - src/index.js
     headers:
       - path: /*
         name: X-Frame-Options
