@@ -33,10 +33,25 @@ ul {
 a {
   text-decoration: none;
 }
-
+.logo {
+  background-image: url(./Logo.jpg);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 200px;
+  height: 200px;
+}
 .btn {
   border-radius: 36px;
+  padding: 8px 36px;
   background: #FEE996;
+  border: 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.8em;
+  display: block;
+  text-align: center;
+  letter-spacing: 2px;
+  transition: all 0.2s;
 }
 
 /* form h2 {
@@ -50,6 +65,7 @@ form {
   margin: 0 auto;
   padding: 30px;
   box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
   border-radius: 10px;
   background: white;
 }
@@ -65,14 +81,19 @@ input {
 label {
   display: block;
   margin: 20px 0 10px;
+  color: #777;
+
 }
 
 button {
   margin-top: 30px;
+  cursor: pointer;
+
   border-radius: 36px;
   background: #FEE996;
   border: 0;
   text-transform: uppercase;
+
   font-weight: 700;
   font-size: 0.8em;
   display: block;
