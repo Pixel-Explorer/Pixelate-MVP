@@ -18,6 +18,7 @@ router.post('/upload', upload.single('photo'), blogController.post_upload);
 router.post('/upload-multiple', upload.array('images', 1000), blogController.post_uploadMultiple);
 router.get('/profile', requireAuth, blogController.get_profile);
 router.get('/photo-details', requireAuth, blogController.get_postData);
+router.get('/admin/dashboard/hashtags',requireAuth, blogController.get_adminHashtags);
 
 //Admin Routes
 
