@@ -23,10 +23,12 @@
                             <img src="<%= data.imageUrl %>" alt="" style="width: 100px;">
                         </td>
                         <td style="max-width: 120px;">
-                            <% for (let hashtag of data.hashtags) { %>
-                                <span><%= hashtag %></span> 
-                                <% } %>
-                        </td>
+                            <% if (Array.isArray(data.hashtags)) { %>
+                              <% for (let hashtag of data.hashtags) { %>
+                                &lt;span><%= hashtag %>&lt;/span>
+                              <% } %>
+                            <% } %>
+                          </td>
                         <td>
                             <%= data.ev %>
                         </td>
