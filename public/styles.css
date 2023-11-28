@@ -26,7 +26,11 @@ body {
   border-radius: 5px;
   background: #fff;
 }
-
+.header-box {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+}
 .section-header {
   margin-bottom: 20px;
   padding-bottom: 10px;
@@ -115,6 +119,7 @@ button:hover {
   border: 4px solid #000;
   padding: 20px;
   text-align: center;
+  box-shadow: none;
 }
 
 .recipe img {
