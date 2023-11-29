@@ -1,45 +1,54 @@
 <%- include('partials/header'); -%>
 
-    <div class="pb-3 mb-3 d-flex border-bottom container">
-        <h4 class="m-0 p-0 me-1">All Photos</h4>
-        <h5 class="m-0 p-0"> (<%= count %>)</h5>
+<div class="pb-3 mb-3 d-flex border-bottom container">
+    <h4 class="m-0 p-0 me-1">All Photos</h4>
+    <h5 class="m-0 p-0"> (<span id="totalCount"><%= count %></span>)</h5>
+</div>
+
+<div class="container">
+    <div class="row" id="cardContainer">
+        <% for (let i = 0; i < datas.length; i++) { %>
+        <div class="col-md-4 mb-4 <%= i >= 12 ? 'd-none' : '' %>">
+            <div class="card">
+                <img src="<%= datas[i].imageUrl %>" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Hashtags</h5>
+                    <p class="card-text">
+                        <% if (Array.isArray(datas[i].hashtags)) { %>
+                        <% for (let hashtag of datas[i].hashtags) { %>
+                        <span class="badge bg-primary me-1"><%= hashtag %></span>
+                        <% } %>
+                        <% } %>
+                    </p>
+                    <p class="card-text">Exposure Value: <%= datas[i].ev %></p>
+                    <p class="card-text">Photo Value: <%= datas[i].sp %></p>
+                </div>
+            </div>
+        </div>
+        <% } %>
     </div>
-    <div class="container admin-user-table">
-
-        <table class="table table-striped table-hover table-responsive">
-            <thead>
-                <tr>
-                    <th scope="col">Photo</th>
-                    <th scope="col">Hashtags</th>
-                    <th scope="col">Exposure Value</th>
-                    <th scope="col">Photo Value</th>
-                </tr>
-            </thead>
-            <tbody class="">
-                <% for (let data of datas) { %>
-
-                    <tr class="position-relative">
-                        <td scope="row">
-                            <img src="<%= data.imageUrl %>" alt="" style="width: 100px;">
-                        </td>
-                        <td style="max-width: 120px;">
-                            <% if (Array.isArray(data.hashtags)) { %>
-                              <% for (let hashtag of data.hashtags) { %>
-                                &lt;span><%= hashtag %>&lt;/span>
-                              <% } %>
-                            <% } %>
-                          </td>
-                        <td>
-                            <%= data.ev %>
-                        </td>
-                        <td>
-                            <%= data.sp %>
-                        </td>
-                    </tr>
-
-                    <% } %>
-            </tbody>
-        </table>
+    <div class="text-center mt-3">
+        <button id="loadMoreBtn" class="btn btn-primary">Load More</button>
     </div>
+</div>
 
-    <%- include('partials/footer'); -%>
+<%- include('partials/footer'); -%>
+
+<script>
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    let startIndex = 12; // Tracks the starting index of hidden images
+    const hiddenCards = document.querySelectorAll('.col-md-4.d-none');
+
+    loadMoreBtn.addEventListener('click', () => {
+        let count = 0;
+        for (let i = startIndex; i < hiddenCards.length && count < 100; i++) {
+            hiddenCards[i].classList.remove('d-none');
+            count++;
+        }
+        startIndex += count;
+
+        if (startIndex >= hiddenCards.length) {
+            loadMoreBtn.style.display = 'none';
+        }
+    });
+</script>
