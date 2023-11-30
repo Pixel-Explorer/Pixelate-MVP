@@ -3,78 +3,89 @@
 <div class="container mt-4">
     <div class="pb-3 mb-3 d-flex border-bottom">
         <h4 class="m-0 p-0 me-1">All Hashtags</h4>
-        
         <h5 class="m-0 p-0"> (<%= count %>)</h5>
-<div> 
-    
-</div>
     </div>
-    <div class="shadow-solid border rounded p-3">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="bg-quaternary text-light">
-                    <tr>
-                        <th scope="col">Hashtag Title</th>
-                        <th scope="col">Number of Photos</th>
-                        <th scope="col">Total Worth Locked</th>
-                        <th scope="col">Average Photo Worth</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% const shades = ['#f2f2f2', '#e6e6e6', '#d9d9d9', '#cccccc', '#bfbfbf']; %>
-                    <% for (let i = 0; i < datas.length; i++) { %>
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                                    <path d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"></path>
-                                </svg>
-                                <div style="display: inline-block; border-radius: 20px; padding: 5px 10px; background-color: <%= shades[i % shades.length] %>;">
-                                    <%= datas[i].title %>
-                                </div>
-                            </div>
-                        </td>
-                        <td><%= datas[i].count %></td>
-                        <td><%= datas[i].utilityTokensLocked %></td>
-                        <td><%= datas[i].utilityTokensLocked/datas[i].count  %></td>
-                    </tr>
-                    <% } %>
-                </tbody>
-            </table>
-            
+    <div class="mb-3">
+        <div class="input-group" style="border-style: solid 1px #0e0f10;">
+            <input type="text" class="form-control" id="searchBox" placeholder="Search Hashtags">
+            <button class="btn btn-outline-secondary" type="button" id="searchButton">Search</button>
         </div>
     </div>
-    <button id="downloadButton" class="btn btn-primary">Download Data</button>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3" id="hashtagContainer" style="background-color: #FFD752; margin-top: 20px; border-radius: 5px; padding: 12px;">
+        <% const shades = ['#f2f2f2', '#e6e6e6', '#d9d9d9', '#cccccc', '#bfbfbf']; %>
+        <% for (let i = 0; i < datas.length; i++) { %>
+        <div class="col">
+            <div class="card" style="padding: 20px; box-shadow: 2px 2px 1px 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="75" height="75 fill="currentColor" class="bi bi-folder2-open" viewBox="0 0 16 16" style="margin: 20px; background-color: #FFD752; padding: 10px; border-radius: 25px; box-shadow: inset -1px 1px 3px 0px;">
+                    <path d="M1 3.5A1.5 1.5 0 0 1 2.5 2h2.764c.958 0 1.76.56 2.311 1.184C7.985 3.648 8.48 4 9 4h4.5A1.5 1.5 0 0 1 15 5.5v.64c.57.265.94.876.856 1.546l-.64 5.124A2.5 2.5 0 0 1 12.733 15H3.266a2.5 2.5 0 0 1-2.481-2.19l-.64-5.124A1.5 1.5 0 0 1 1 6.14zM2 6h12v-.5a.5.5 0 0 0-.5-.5H9c-.964 0-1.71-.629-2.174-1.154C6.374 3.334 5.82 3 5.264 3H2.5a.5.5 0 0 0-.5.5zm-.367 1a.5.5 0 0 0-.496.562l.64 5.124A1.5 1.5 0 0 0 3.266 14h9.468a1.5 1.5 0 0 0 1.489-1.314l.64-5.124A.5.5 0 0 0 14.367 7H1.633z"/>
+                  </svg>
+                <div class="card-body">
+                    <h5 class="card-title" style="font-variant-caps: all-petite-caps; font-weight: 900; font-size: xx-large;"><%= datas[i].title %></h5>
+                    <p class="card-text"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16">
+                        <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+                        <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10"/>
+                      </svg> : <%= datas[i].count %></p>
+                    <p class="card-text" style="background-color: #cbefcf; box-shadow: inset -1px 1px 2px #1c1c1c; border-radius: 4px; padding:4px;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
+                        <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                      </svg>: <%= datas[i].utilityTokensLocked %></p>
+                    <p class="card-text">Avg: <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16">
+                        <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                      </svg><%= datas[i].utilityTokensLocked/datas[i].count %></p>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+    <button id="downloadButton" class="btn btn-primary mt-3">Download Data</button>
 
-<script>
-  const downloadButton = document.getElementById('downloadButton');
-  downloadButton.addEventListener('click', (event) => {
-    event.preventDefault(); // Prevent the default button behavior
+    <script>
+        const downloadButton = document.getElementById('downloadButton');
+        downloadButton.addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent the default button behavior
 
-    // Get the table rows
-    const tableRows = document.querySelectorAll('tbody tr');
+            // Get the table rows
+            const tableRows = document.querySelectorAll('tbody tr');
 
-    // Generate the CSV data
-    const data = [["Hashtag Title", "Number of Photos", "Total Worth Locked", "Average Photo Worth"]];
-    tableRows.forEach((row) => {
-        const title = row.querySelector('td:nth-child(1) div').textContent.trim();      const count = row.querySelector('td:nth-child(2)').textContent.trim();
-      const utilityTokensLocked = row.querySelector('td:nth-child(3)').textContent.trim();
-      const tokensPerCount = parseFloat(utilityTokensLocked) / parseFloat(count);
-      data.push([title, count, utilityTokensLocked, tokensPerCount]);
-    });
+            // Generate the CSV data
+            const data = [["Hashtag Title", "Number of Photos", "Total Worth Locked", "Average Photo Worth"]];
+            tableRows.forEach((row) => {
+                const title = row.querySelector('td:nth-child(1) div').textContent.trim();
+                const count = row.querySelector('td:nth-child(2)').textContent.trim();
+                const utilityTokensLocked = row.querySelector('td:nth-child(3)').textContent.trim();
+                const tokensPerCount = parseFloat(utilityTokensLocked) / parseFloat(count);
+                data.push([title, count, utilityTokensLocked, tokensPerCount]);
+            });
 
-    const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(data.map(row => row.join(",")).join("\n"));
+            const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(data.map(row => row.join(",")).join("\n"));
 
-    // Create a temporary anchor element and download the CSV file
-    const link = document.createElement("a");
-    link.setAttribute("href", csvContent);
-    link.setAttribute("download", "data.csv");
-    link.style.display = "none";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  });
-</script>
+            // Create a temporary anchor element and download the CSV file
+            const link = document.createElement("a");
+            link.setAttribute("href", csvContent);
+            link.setAttribute("download", "data.csv");
+            link.style.display = "none";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        const searchButton = document.getElementById('searchButton');
+        const searchBox = document.getElementById('searchBox');
+        const hashtagContainer = document.getElementById('hashtagContainer');
+
+        searchButton.addEventListener('click', () => {
+            const searchTerm = searchBox.value.toLowerCase().trim();
+
+            const cards = hashtagContainer.querySelectorAll('.card');
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </div>
 
 <%- include('../partials/footer'); -%>
