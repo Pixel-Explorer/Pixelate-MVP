@@ -5,8 +5,11 @@
     <div class="row">
       <div class="col-md-6 mt-3">
         <form id="upload-single" enctype="multipart/form-data">
-          <h2 class="fw-bold d-flex align-items-center mb-3" >
-          Single image         </h2>
+          <h2 class="fw-bold d-flex align-items-center mb-3" style="border: 1px solid #0e0d10; padding: auto; padding-left: 10px; padding-right: 10px; border-radius: 5px; padding-top: 10px; padding-bottom: 10px; background-color: #cfcfcf;" >
+          Single image    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16" style="margin-left: 10px;">
+            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"/>
+            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12"/>
+          </svg>     </h2>
           <label for="image">Add image</label>
           <input type="file" class="form-control" id="image-input" name="photo" accept="image/jpeg, image/png, image/jpg" required />
           <label for="hastags">Hastags</label>
@@ -25,14 +28,20 @@
 
           <div class="hastag error"></div>
           <button type="submit" class="mt-3 color=#458CCB" id="submit-button">
-Upload            
+Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16" style="margin-left: 10px;">
+  <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z"/>
+  <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+</svg>         
           </button>
         </form>
       </div>
       <div class="col-md-6 mt-3 ">
         <form id="upload-multiple" enctype="multipart/form-data">
-          <h2 class="fw-bold d-flex align-items-center mb-3">
-Multiple Images          </h2>
+          <h2 class="fw-bold d-flex align-items-center mb-3" style="border: 1px solid #0e0d10; padding: auto; padding-left: 10px; padding-right: 10px; border-radius: 5px; padding-top: 10px; padding-bottom: 10px; background-color: #cfcfcf;">
+Multiple Images     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-images" viewBox="0 0 16 16" style="margin-left: 10px;">
+  <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"/>
+  <path d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10"/>
+</svg>     </h2>
           <label for="image">Add images</label>
           <input type="file" name="images" class="form-control" id="image-input-multiple" accept="image/jpeg, image/png" required multiple />
           <label for="hastags">Hastags</label>
@@ -50,7 +59,10 @@ Multiple Images          </h2>
           </div>
           <div class="hastag error"></div>
           <button type="submit" class="mt-3 color=#458CCB">
-Upload            
+Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16" style="margin-left: 10px;">
+  <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z"/>
+  <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
+</svg>       
           </button>
         </form>
       </div>
@@ -243,7 +255,7 @@ Upload
   const showSuccessMessage = () => {
     successMessage.style.display = 'block';
     setTimeout(() => {
-      location.reload(); // Refresh the page after 5 seconds
+      location.reload(); // Refresh the page after 2 seconds
     }, 5000);
   };
 
