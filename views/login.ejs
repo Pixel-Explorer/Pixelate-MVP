@@ -1,14 +1,17 @@
 <%- include('partials/header'); -%>
-
-  <form action="/login">
-    <h2 class="fw-bold">Login</h2>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@angular/material@latest/prebuilt-themes/indigo-pink.css" rel="stylesheet">
+  <form action="/login" style="border: 2px solid #0e0d10; padding: 50px; border-radius: 6px; box-shadow: #0e0d10 2px 2px 1px 2px;">
+    <h2 class="none" style="border: 2px #0e0d10; background: #eef7ff; padding: 25px; font-weight: 300; box-shadow: #0e0d10 1px 1px 1px 2px; border-radius: 2px;">Login<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="margin-left: 10px; margin-right: 10px;" class="bi bi-toggle-off" viewBox="0 0 16 16">
+      <path d="M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/>
+    </svg></h2>
     <label for="email">Email</label>
     <input type="text" class="form-control" name="email" required />
     <div class="email error"></div>
     <label for="password">Password</label>
     <input type="password" class="form-control" name="password" required />
     <div class="password error"></div>
-    <button class="mt-3">login</button>
+    <button class="mt-3" style="border: 1px #0e0d10; background: #9ed2ff; box-shadow: #0e0d10 1px 1px 1px 2px; border-radius: 3px;">login</button>
   </form>
 
   <footer>House of Pixels OPC Pvt Ltd for copyright &#169;</footer>
