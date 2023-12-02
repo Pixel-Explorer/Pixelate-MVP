@@ -96,7 +96,9 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
 
 
   <script>
-
+function disableSubmitButton(form) {
+  form.querySelector('button[type="submit"]').disabled = true;
+}
     const hashtagInput = document.getElementById('hashtag-input');
     const hashtagList = document.querySelector('.hashtag-list');
     hashtagList.style.display = 'none';
@@ -365,13 +367,12 @@ const simulateProgress = () => {
 const updateProgress = (progress) => {
   commonProgressBar.style.width = progress + '%';
   commonProgressBar.setAttribute('aria-valuenow', progress);
-
   progressStats.textContent = `Uploading... ${progress}%`;
 
   firebase.database().ref('uploadProgress').set(progress);
 };
 const formSingle = document.getElementById('upload-single');
-formSingle.addEventListener('submit', async (e) => {
+UploadFormSingle.addEventListener('submit', async (e) => {
   e.preventDefault();
   const imageInput = document.getElementById('image-input');
   const image = imageInput.files[0];
@@ -384,10 +385,17 @@ formSingle.addEventListener('submit', async (e) => {
       method: 'POST',
       body: formData,
     });
-    simulateProgress(); // Start the loading bar
-    formSingle.querySelector('button[type="submit"]').disabled = true; // Disable the upload button
+
+    disableSubmitButton(UploadFormSingle); // Disable the submit button
+    console.log('Single photo uploaded successfully!');
+
+    // Add any other handling or feedback here
+
   } catch (err) {
     console.log(err);
+    // Handle errors here, display a message or re-enable the submit button
+    // Enable the submit button in case of an error
+    UploadFormSingle.querySelector('button[type="submit"]').disabled = false;
   }
 });
 
