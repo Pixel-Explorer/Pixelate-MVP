@@ -31,6 +31,7 @@
                 <% } %>
                   <!-- Add more hashtags as needed -->
             </ul>
+        
           </div>
 
           <div class="hastag error"></div>
@@ -66,7 +67,7 @@ Multiple Images     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="3
             </ul>
           </div>
           <div class="hastag error"></div>
-          <button type="submit" class="mt-3 color=#458CCB" style="border: 1px solid #0e0d10; padding: 10px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 500; margin-bottom: 20px;">
+          <button type="submit" class="mt-3 color=#458CCB" style="border: 1px solid #0e0d10; padding: 10px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 500; margin-bottom: 20px; ">
 Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-arrow-up" viewBox="0 0 16 16" style="margin-left: 10px;">
   <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z"/>
   <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
@@ -77,21 +78,21 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
         </div>
       </div>
     </div>
-    <div class="container" style="font-size: large; font-weight: 300; padding:20px; max-height: 80px; margin-top: 10px; margin-bottom: 10px; border-radius: 80px; box-shadow:  1px 1px 0px 1px #0e0d10; border: #0e0d10 1px solid; background-color:#0e0d10; vertical-align: middle; -webkit-text-fill-color: #e1e1e1;">
-      Loading ...
-      <div class="progress" style="height: 20px; max-width: auto; justify-content: center; margin:auto; border-radius: 10px; border: #0e0d10 0.25px solid; background-color: #e1e1e1">
-        <div id="commonProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-      </div>
-      <!-- Success message -->
-      <div class="alert alert-success mt-3" role="alert" style="display: none;">
+    <div class="container" style="font-size: large; font-weight: 300; padding:20px;  margin-top: 10px; margin-bottom: 10px; border-radius: 6px; box-shadow:  1px 1px 0px 1px #0e0d10; border: #0e0d10 1px solid; background-color:#c1f286; vertical-align: middle; -webkit-text-fill-color: #0e0d10">
+      Upload Progress ... <!-- Success message -->
+      <div class="alert alertSuccess" role="alert" style="display: none;">
         Upload successful!
       </div>
       <!-- Error message -->
-      <div class="alert alert-danger mt-3" role="alert" style="display: none;">
+      <div class="alert alert-danger" role="alert" style="display: none;">
         Upload failed!
       </div>
+      <div class="progress" style="height: 20px; max-width: auto; justify-content: center; margin:10px; border-radius: 10px; border: #0e0d10 1px solid; background-color: #e1e1e1">
+        <div id="commonProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        <div id="progressStats"></div>
+      </div>
   </div>
-  <footer>House of Pixels OPC Pvt Ltd for copyright &#169;</footer>
+  <footer>&#169; House of Pixels OPC Pvt Ltd &#169;</footer>
 
 
   <script>
@@ -163,6 +164,7 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
         hashtagInput.value = '';
         hashtagList.style.display = 'none';
       }
+      
     });
 
     hashtagListMultiple.addEventListener('click', (event) => {
@@ -330,72 +332,88 @@ hashtagListMultiple.addEventListener('click', (event) => {
     });
 
     const commonProgressBar = document.getElementById('commonProgressBar');
-    const simulateProgress = () => {
-      let width = 1;
-      const interval = setInterval(() => {
-        commonProgressBar.style.width = width + '%';
-        commonProgressBar.setAttribute('aria-valuenow', width);
-        width++;
-        if (width >= 100) {
-          clearInterval(interval);
-          showSuccessMessage();
-        }
-      }, 10);
-    };
+const progressStats = document.getElementById('progressStats');
 
-    // Function to update the progress in Firebase Storage
-    const updateProgress = (progress) => {
-      // Implement your logic to update the progress in Firebase Storage
-      firebase.database().ref('uploadProgress').set(progress);
-    };
+const alertSuccess = (message) => {
+  const alertSuccess = document.querySelector('.alertSuccess');
+  alertSuccess.textContent = message;
+  alertSuccess.style.display = 'block';
+  setTimeout(() => {
+    alertSuccess.style.display = 'none';
+  }, 3000);
+};
 
-    const formSingle = document.getElementById('upload-single');
-    formSingle.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const imageInput = document.getElementById('image-input');
-      const image = imageInput.files[0];
-      const formData = new FormData();
-      formData.append('photo', image);
-      formData.append('hashtags', JSON.stringify(selectedHashtagsList));
+const simulateProgress = () => {
+  let width = 1;
+  const interval = setInterval(() => {
+    commonProgressBar.style.width = width + '%';
+    commonProgressBar.setAttribute('aria-valuenow', width);
 
-      try {
-        const res = await fetch('/upload', {
-          method: 'POST',
-          body: formData,
-        });
-        simulateProgress(); // Start the loading bar
-      } catch (err) {
-        console.log(err);
-      }
+    progressStats.textContent = `Uploaded ${width}%`;
+
+    width++;
+    if (width >= 100) {
+      clearInterval(interval);  
+      alertSuccess('Upload Successful!');
+      formSingle.querySelector('button[type="submit"]').disabled = false;
+      formMultiple.querySelector('button[type="submit"]').disabled = false;
+    }
+  }, 10);
+};
+
+// Function to update the progress in Firebase Storage
+const updateProgress = (progress) => {
+  commonProgressBar.style.width = progress + '%';
+  commonProgressBar.setAttribute('aria-valuenow', progress);
+
+  progressStats.textContent = `Uploading... ${progress}%`;
+
+  firebase.database().ref('uploadProgress').set(progress);
+};
+const formSingle = document.getElementById('upload-single');
+formSingle.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const imageInput = document.getElementById('image-input');
+  const image = imageInput.files[0];
+  const formData = new FormData();
+  formData.append('photo', image);
+  formData.append('hashtags', JSON.stringify(selectedHashtagsList));
+
+  try {
+    const res = await fetch('/upload', {
+      method: 'POST',
+      body: formData,
     });
+    simulateProgress(); // Start the loading bar
+    formSingle.querySelector('button[type="submit"]').disabled = true; // Disable the upload button
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-    const formMultiple = document.getElementById('upload-multiple');
-    formMultiple.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const imageInput = document.getElementById('image-input-multiple');
-      const images = imageInput.files;
-      const formData = new FormData();
+const formMultiple = document.getElementById('upload-multiple');
+formMultiple.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const imageInput = document.getElementById('image-input-multiple');
+  const images = imageInput.files;
+  const formData = new FormData();
 
-      for (let i = 0; i < images.length; i++) {
-        formData.append('images', images[i]);
-      }
-      formData.append('hashtagsMultiple', JSON.stringify(selectedHashtagsMultipleList));
+  for (let i = 0; i < images.length; i++) {
+    formData.append('images', images[i]);
+  }
+  formData.append('hashtagsMultiple', JSON.stringify(selectedHashtagsMultipleList));
 
-      try {
-        const res = await fetch('/upload-multiple', {
-          method: 'POST',
-          body: formData,
-        });
-        simulateProgress(); // Start the loading bar
-      } catch (err) {
-        console.log(err);
-      }
+  try {
+    const res = await fetch('/upload-multiple', {
+      method: 'POST',
+      body: formData,
     });
-    function showSuccessMessage() {
-  // Code to display the success message goes here
-  const successMessage = document.querySelector('.alert-success');
-  successMessage.style.display = 'block';
-}
+    simulateProgress(); // Start the loading bar
+    formMultiple.querySelector('button[type="submit"]').disabled = true; // Disable the upload button
+  } catch (err) {
+    console.log(err);
+  }
+});
   </script>
 
   </body>
