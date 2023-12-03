@@ -4,13 +4,13 @@
   <!-- Include the necessary Firebase scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-storage.js"></script>
- 
+  
 </head>
 
   <div class="container" style="margin: auto; margin-bottom: 20px; border-radius: 20px; box-shadow:  3px 3px 0px 3px #0e0d10; align-content: center; -ms-grid-column-align: center;">
    
     <div class="row" style="justify-content: center;">
-      <!-- <div class="col-md-6 mt-3">
+      <div class="col-md-6 mt-3">
         <form id="upload-single" enctype="multipart/form-data" style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 2px 2px 0px 2px;">
           <h2 h2 class="d-flex align-items-center mb-3" style="border: 1px solid #0e0d10; padding: 50px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 200;">
                       Single image    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#0e0d10" class="bi bi-image" viewBox="0 0 16 16" style="margin-left: 30px;">
@@ -29,7 +29,7 @@
                 <li>#<%=hastag%>
                 </li>
                 <% } %>
-                   Add more hashtags as needed
+                  <!-- Add more hashtags as needed -->
             </ul>
         
           </div>
@@ -42,7 +42,7 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
 </svg>         
           </button>
         </form>
-      </div> -->
+      </div>
       
       <div class="col-md-6 mt-3 ">
         <form id="upload-multiple" enctype="multipart/form-data" style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 2px 2px 0px 2px;">
@@ -78,20 +78,7 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
         </div>
       </div>
     </div>
-    <div class="container" style="font-size: large; font-weight: 300; padding:20px;  margin-top: 10px; margin-bottom: 10px; border-radius: 6px; box-shadow:  1px 1px 0px 1px #0e0d10; border: #0e0d10 1px solid; background-color:#c1f286; vertical-align: middle; -webkit-text-fill-color: #0e0d10">
-      Upload Progress ... <!-- Success message -->
-      <div class="alert alertSuccess" role="alert" style="display: none;">
-        Upload successful!
-      </div>
-      <!-- Error message -->
-      <div class="alert alert-danger" role="alert" style="display: none;">
-        Upload failed!
-      </div>
-      <div class="progress" style="height: 20px; max-width: auto; justify-content: center; margin:10px; border-radius: 10px; border: #0e0d10 1px solid; background-color: #e1e1e1">
-        <div id="commonProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-        <div id="progressStats"></div>
-      </div>
-  </div>
+  
   <footer>&#169; House of Pixels OPC Pvt Ltd &#169;</footer>
 
 
@@ -99,11 +86,11 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
 function disableSubmitButton(form) {
   form.querySelector('button[type="submit"]').disabled = true;
 }
-    // const hashtagInput = document.getElementById('hashtag-input');
-    // const hashtagList = document.querySelector('.hashtag-list');
-    // hashtagList.style.display = 'none';
-    // const selectedHashtags = document.querySelector('.selected-hashtags');
-    // const selectedHashtagsList = [];
+    const hashtagInput = document.getElementById('hashtag-input');
+    const hashtagList = document.querySelector('.hashtag-list');
+    hashtagList.style.display = 'none';
+    const selectedHashtags = document.querySelector('.selected-hashtags');
+    const selectedHashtagsList = [];
 
     const hashtagInputMultiple = document.getElementById('hashtag-input-multiple');
     const hashtagListMultiple = document.querySelector('.hashtag-list-multiple');
@@ -115,25 +102,25 @@ function disableSubmitButton(form) {
 
 
     
-    // hashtagInput.addEventListener('input', () => {
-    //   const inputText = hashtagInput.value.toLowerCase();
-    //   const hashtags = Array.from(hashtagList.querySelectorAll('li'));
+    hashtagInput.addEventListener('input', () => {
+      const inputText = hashtagInput.value.toLowerCase();
+      const hashtags = Array.from(hashtagList.querySelectorAll('li'));
 
-    //   if (inputText) {
-    //     hashtagList.style.display = 'block';
-    //   } else {
-    //     hashtagList.style.display = 'none';
-    //   }
+      if (inputText) {
+        hashtagList.style.display = 'block';
+      } else {
+        hashtagList.style.display = 'none';
+      }
 
-    //   hashtags.forEach((hashtag) => {
-    //     const text = hashtag.textContent.toLowerCase();
-    //     if (text.includes(inputText)) {
-    //       hashtag.style.display = 'block';
-    //     } else {
-    //       hashtag.style.display = 'none';
-    //     }
-    //   });
-    // });
+      hashtags.forEach((hashtag) => {
+        const text = hashtag.textContent.toLowerCase();
+        if (text.includes(inputText)) {
+          hashtag.style.display = 'block';
+        } else {
+          hashtag.style.display = 'none';
+        }
+      });
+    });
 
     hashtagInputMultiple.addEventListener('input', () => {
       const inputText = hashtagInputMultiple.value.toLowerCase();
@@ -155,19 +142,19 @@ function disableSubmitButton(form) {
       });
     });
 
-    // hashtagList.addEventListener('click', (event) => {
-    //   if (event.target.tagName === 'LI') {
-    //     const selectedHashtag = document.createElement('div');
-    //     selectedHashtag.textContent = event.target.textContent;
-    //     selectedHashtag.className = 'selected-hashtag';
-    //     selectedHashtags.appendChild(selectedHashtag);
-    //     selectedHashtagsList.push(event.target.textContent);
-    //     console.log(selectedHashtagsList);
-    //     hashtagInput.value = '';
-    //     hashtagList.style.display = 'none';
-    //   }
+    hashtagList.addEventListener('click', (event) => {
+      if (event.target.tagName === 'LI') {
+        const selectedHashtag = document.createElement('div');
+        selectedHashtag.textContent = event.target.textContent;
+        selectedHashtag.className = 'selected-hashtag';
+        selectedHashtags.appendChild(selectedHashtag);
+        selectedHashtagsList.push(event.target.textContent);
+        console.log(selectedHashtagsList);
+        hashtagInput.value = '';
+        hashtagList.style.display = 'none';
+      }
       
-    // });
+    });
 
     hashtagListMultiple.addEventListener('click', (event) => {
       if (event.target.tagName === 'LI') {
@@ -182,16 +169,16 @@ function disableSubmitButton(form) {
       }
     });
 
-    // selectedHashtags.addEventListener('click', (event) => {
-    //   if (event.target.tagName === 'DIV') {
-    //     var index = selectedHashtagsList.indexOf(event.target.textContent);
-    //     if (index > -1) {
-    //       selectedHashtagsList.splice(index, 1);
-    //     }
-    //     console.log(selectedHashtagsList);
-    //     event.target.remove();
-    //   }
-    // });
+    selectedHashtags.addEventListener('click', (event) => {
+      if (event.target.tagName === 'DIV') {
+        var index = selectedHashtagsList.indexOf(event.target.textContent);
+        if (index > -1) {
+          selectedHashtagsList.splice(index, 1);
+        }
+        console.log(selectedHashtagsList);
+        event.target.remove();
+      }
+    });
 
     selectedHashtagsMultiple.addEventListener('click', (event) => {
       if (event.target.tagName === 'DIV') {
@@ -204,29 +191,29 @@ function disableSubmitButton(form) {
       }
     });
 
-    // const UploadFormSingle = document.getElementById('upload-single');
-    // UploadFormSingle.addEventListener('submit', async (e) => {
-    //   e.preventDefault();
-    //   const imageInput = document.getElementById('image-input');
-    //   const image = imageInput.files[0];
-    //   // console.log(image);
+    const UploadFormSingle = document.getElementById('upload-single');
+    UploadFormSingle.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const imageInput = document.getElementById('image-input');
+      const image = imageInput.files[0];
+      // console.log(image);
 
-    //   const formData = new FormData();
-    //   formData.append('photo', image);
-    //   formData.append('hashtags', JSON.stringify(selectedHashtagsList));
+      const formData = new FormData();
+      formData.append('photo', image);
+      formData.append('hashtags', JSON.stringify(selectedHashtagsList));
 
-    //   console.log(formData);
+      console.log(formData);
 
-    //   try {
-    //     const res = await fetch('/upload', {
-    //       method: 'POST',
-    //       body: formData,
-    //     });
-    //   }
-    //   catch (err) {
-    //     console.log(err);
-    //   }
-    // });
+      try {
+        const res = await fetch('/upload', {
+          method: 'POST',
+          body: formData,
+        });
+      }
+      catch (err) {
+        console.log(err);
+      }
+    });
 
     const uploadFormMultiple = document.getElementById('upload-multiple');
     uploadFormMultiple.addEventListener('submit', async (e) => {
@@ -320,108 +307,7 @@ hashtagListMultiple.addEventListener('click', (event) => {
   });
  
 
-   // Initialize Firebase with your Firebase project configuration
-   firebase.initializeApp({
-      // Add your Firebase project configuration here
-      apiKey: "AIzaSyBgh9RutpTDCq12QYjpnFq5B7W2PAf4X14",
-      authDomain: "pixelate-app-e5126.firebaseapp.com",
-      databaseURL: "https://pixelate-app-e5126-default-rtdb.firebaseio.com",
-       projectId: "pixelate-app-e5126",
-      storageBucket: "pixelate-app-e5126.appspot.com",
-     messagingSenderId: "880725228002",
-     appId: "1:880725228002:web:6f916dddcf955c24daa1bb",
-     measurementId: "G-V4KRGLXZ1W"
-    });
-
-    const commonProgressBar = document.getElementById('commonProgressBar');
-const progressStats = document.getElementById('progressStats');
-
-const alertSuccess = (message) => {
-  const alertSuccess = document.querySelector('.alertSuccess');
-  alertSuccess.textContent = message;
-  alertSuccess.style.display = 'block';
-  setTimeout(() => {
-    alertSuccess.style.display = 'none';
-  }, 3000);
-};
-
-const simulateProgress = () => {
-  let width = 1;
-  const interval = setInterval(() => {
-    commonProgressBar.style.width = width + '%';
-    commonProgressBar.setAttribute('aria-valuenow', width);
-
-    progressStats.textContent = `Uploaded ${width}%`;
-
-    width++;
-    if (width >= 100) {
-      clearInterval(interval);  
-      alertSuccess('Upload Successful!');
-      formSingle.querySelector('button[type="submit"]').disabled = false;
-      formMultiple.querySelector('button[type="submit"]').disabled = false;
-    }
-  }, 10);
-};
-
-// Function to update the progress in Firebase Storage
-const updateProgress = (progress) => {
-  commonProgressBar.style.width = progress + '%';
-  commonProgressBar.setAttribute('aria-valuenow', progress);
-  progressStats.textContent = `Uploading... ${progress}%`;
-
-  firebase.database().ref('uploadProgress').set(progress);
-};
-const formSingle = document.getElementById('upload-single');
-UploadFormSingle.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const imageInput = document.getElementById('image-input');
-  const image = imageInput.files[0];
-  const formData = new FormData();
-  formData.append('photo', image);
-  formData.append('hashtags', JSON.stringify(selectedHashtagsList));
-
-  try {
-    const res = await fetch('/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
-    disableSubmitButton(UploadFormSingle); // Disable the submit button
-    console.log('Single photo uploaded successfully!');
-
-    // Add any other handling or feedback here
-
-  } catch (err) {
-    console.log(err);
-    // Handle errors here, display a message or re-enable the submit button
-    // Enable the submit button in case of an error
-    UploadFormSingle.querySelector('button[type="submit"]').disabled = false;
-  }
-});
-
-const formMultiple = document.getElementById('upload-multiple');
-formMultiple.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const imageInput = document.getElementById('image-input-multiple');
-  const images = imageInput.files;
-  const formData = new FormData();
-
-  for (let i = 0; i < images.length; i++) {
-    formData.append('images', images[i]);
-  }
-  formData.append('hashtagsMultiple', JSON.stringify(selectedHashtagsMultipleList));
-
-  try {
-    const res = await fetch('/upload-multiple', {
-      method: 'POST',
-      body: formData,
-    });
-    simulateProgress(); // Start the loading bar
-    formMultiple.querySelector('button[type="submit"]').disabled = true; // Disable the upload button
-  } catch (err) {
-    console.log(err);
-  }
-});
+   
   </script>
 
   </body>
