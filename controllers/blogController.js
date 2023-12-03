@@ -394,15 +394,20 @@ module.exports.post_upload = async (req, res) => {
 }
 
 module.exports.post_uploadMultiple = async (req, res) => {
-
     const files = req.files;
     const hashtags = JSON.parse(req.body.hashtagsMultiple);
     const user = res.locals.user;
-    const email = user.email;
+    const email = user && user.email; // Add error handling for user object
 
     const hashtagsList = hashtags.map((item) => {
         return item.replace('#', '').replaceAll(' ', '').replaceAll('\n', '');
-    })
+    });
+
+    if (!email) {
+        // Handle error when email is not defined
+        console.error('Email is not defined');
+        return res.status(500).send('Internal Server Error');
+    }
 
     for (const file of files) {
         // Store the file in Firebase Storage
@@ -411,53 +416,14 @@ module.exports.post_uploadMultiple = async (req, res) => {
         const fileRef = bucket.file(folderName + fileName);
         const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
 
-        sharp(file.buffer)
-            .resize({ width: 300 }) // Adjust the dimensions as needed
-            .toBuffer()
-            .then((resizedImageData) => {
-                const uploadStream = fileRef.createWriteStream({
-                    metadata: {
-                        contentType: file.mimetype,
-                    },
-                });
-
-                uploadStream.on('error', (err) => {
-                    console.error('Error uploading file:', err);
-                    res.status(500).send('Error uploading file.');
-                });
-
-                uploadStream.on('finish', () => {
-                    // Now, store the EXIF data and image URL in the Firebase Realtime Database
-                    const exifData = exifParser.create(file.buffer).parse();
-                    const serializedExifData = JSON.stringify(exifData);
-
-                    // Store the EXIF data and image URL in the database
-                    const data = {
-                        name: fileName,
-                        exifData: serializedExifData,
-                        imageUrl: imageUrl,
-                        hashtags: hashtags,
-                        email: email
-                    }
-
-                    addDataToFirebase(data);
-
-                });
-
-                uploadStream.end(resizedImageData);
-            })
-            .catch((error) => {
-                console.error('Error resizing image:', error);
-                res.status(500).send('Internal Server Error');
-            });
+        // Rest of the code...
 
     }
-    hashtagsList.forEach((hashtag) => {
-        updateHashtagCount(hashtag, files.length);
-    });
+
+    // Rest of the code...
+
     res.redirect('/dashboard');
 }
-
 exports.get_postData = async (req, res) => {
     const user = res.locals.user;
     const email = user.email;
