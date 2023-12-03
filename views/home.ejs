@@ -4,13 +4,13 @@
   <!-- Include the necessary Firebase scripts -->
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-storage.js"></script>
-  
+ 
 </head>
 
   <div class="container" style="margin: auto; margin-bottom: 20px; border-radius: 20px; box-shadow:  3px 3px 0px 3px #0e0d10; align-content: center; -ms-grid-column-align: center;">
    
     <div class="row" style="justify-content: center;">
-      <div class="col-md-6 mt-3">
+      <!-- <div class="col-md-6 mt-3">
         <form id="upload-single" enctype="multipart/form-data" style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 2px 2px 0px 2px;">
           <h2 h2 class="d-flex align-items-center mb-3" style="border: 1px solid #0e0d10; padding: 50px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 200;">
                       Single image    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#0e0d10" class="bi bi-image" viewBox="0 0 16 16" style="margin-left: 30px;">
@@ -29,7 +29,7 @@
                 <li>#<%=hastag%>
                 </li>
                 <% } %>
-                  <!-- Add more hashtags as needed -->
+                   Add more hashtags as needed
             </ul>
         
           </div>
@@ -42,7 +42,7 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
 </svg>         
           </button>
         </form>
-      </div>
+      </div> -->
       
       <div class="col-md-6 mt-3 ">
         <form id="upload-multiple" enctype="multipart/form-data" style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 2px 2px 0px 2px;">
@@ -99,11 +99,11 @@ Upload     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="
 function disableSubmitButton(form) {
   form.querySelector('button[type="submit"]').disabled = true;
 }
-    const hashtagInput = document.getElementById('hashtag-input');
-    const hashtagList = document.querySelector('.hashtag-list');
-    hashtagList.style.display = 'none';
-    const selectedHashtags = document.querySelector('.selected-hashtags');
-    const selectedHashtagsList = [];
+    // const hashtagInput = document.getElementById('hashtag-input');
+    // const hashtagList = document.querySelector('.hashtag-list');
+    // hashtagList.style.display = 'none';
+    // const selectedHashtags = document.querySelector('.selected-hashtags');
+    // const selectedHashtagsList = [];
 
     const hashtagInputMultiple = document.getElementById('hashtag-input-multiple');
     const hashtagListMultiple = document.querySelector('.hashtag-list-multiple');
@@ -115,25 +115,25 @@ function disableSubmitButton(form) {
 
 
     
-    hashtagInput.addEventListener('input', () => {
-      const inputText = hashtagInput.value.toLowerCase();
-      const hashtags = Array.from(hashtagList.querySelectorAll('li'));
+    // hashtagInput.addEventListener('input', () => {
+    //   const inputText = hashtagInput.value.toLowerCase();
+    //   const hashtags = Array.from(hashtagList.querySelectorAll('li'));
 
-      if (inputText) {
-        hashtagList.style.display = 'block';
-      } else {
-        hashtagList.style.display = 'none';
-      }
+    //   if (inputText) {
+    //     hashtagList.style.display = 'block';
+    //   } else {
+    //     hashtagList.style.display = 'none';
+    //   }
 
-      hashtags.forEach((hashtag) => {
-        const text = hashtag.textContent.toLowerCase();
-        if (text.includes(inputText)) {
-          hashtag.style.display = 'block';
-        } else {
-          hashtag.style.display = 'none';
-        }
-      });
-    });
+    //   hashtags.forEach((hashtag) => {
+    //     const text = hashtag.textContent.toLowerCase();
+    //     if (text.includes(inputText)) {
+    //       hashtag.style.display = 'block';
+    //     } else {
+    //       hashtag.style.display = 'none';
+    //     }
+    //   });
+    // });
 
     hashtagInputMultiple.addEventListener('input', () => {
       const inputText = hashtagInputMultiple.value.toLowerCase();
@@ -155,19 +155,19 @@ function disableSubmitButton(form) {
       });
     });
 
-    hashtagList.addEventListener('click', (event) => {
-      if (event.target.tagName === 'LI') {
-        const selectedHashtag = document.createElement('div');
-        selectedHashtag.textContent = event.target.textContent;
-        selectedHashtag.className = 'selected-hashtag';
-        selectedHashtags.appendChild(selectedHashtag);
-        selectedHashtagsList.push(event.target.textContent);
-        console.log(selectedHashtagsList);
-        hashtagInput.value = '';
-        hashtagList.style.display = 'none';
-      }
+    // hashtagList.addEventListener('click', (event) => {
+    //   if (event.target.tagName === 'LI') {
+    //     const selectedHashtag = document.createElement('div');
+    //     selectedHashtag.textContent = event.target.textContent;
+    //     selectedHashtag.className = 'selected-hashtag';
+    //     selectedHashtags.appendChild(selectedHashtag);
+    //     selectedHashtagsList.push(event.target.textContent);
+    //     console.log(selectedHashtagsList);
+    //     hashtagInput.value = '';
+    //     hashtagList.style.display = 'none';
+    //   }
       
-    });
+    // });
 
     hashtagListMultiple.addEventListener('click', (event) => {
       if (event.target.tagName === 'LI') {
@@ -182,16 +182,16 @@ function disableSubmitButton(form) {
       }
     });
 
-    selectedHashtags.addEventListener('click', (event) => {
-      if (event.target.tagName === 'DIV') {
-        var index = selectedHashtagsList.indexOf(event.target.textContent);
-        if (index > -1) {
-          selectedHashtagsList.splice(index, 1);
-        }
-        console.log(selectedHashtagsList);
-        event.target.remove();
-      }
-    });
+    // selectedHashtags.addEventListener('click', (event) => {
+    //   if (event.target.tagName === 'DIV') {
+    //     var index = selectedHashtagsList.indexOf(event.target.textContent);
+    //     if (index > -1) {
+    //       selectedHashtagsList.splice(index, 1);
+    //     }
+    //     console.log(selectedHashtagsList);
+    //     event.target.remove();
+    //   }
+    // });
 
     selectedHashtagsMultiple.addEventListener('click', (event) => {
       if (event.target.tagName === 'DIV') {
@@ -204,29 +204,29 @@ function disableSubmitButton(form) {
       }
     });
 
-    const UploadFormSingle = document.getElementById('upload-single');
-    UploadFormSingle.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const imageInput = document.getElementById('image-input');
-      const image = imageInput.files[0];
-      // console.log(image);
+    // const UploadFormSingle = document.getElementById('upload-single');
+    // UploadFormSingle.addEventListener('submit', async (e) => {
+    //   e.preventDefault();
+    //   const imageInput = document.getElementById('image-input');
+    //   const image = imageInput.files[0];
+    //   // console.log(image);
 
-      const formData = new FormData();
-      formData.append('photo', image);
-      formData.append('hashtags', JSON.stringify(selectedHashtagsList));
+    //   const formData = new FormData();
+    //   formData.append('photo', image);
+    //   formData.append('hashtags', JSON.stringify(selectedHashtagsList));
 
-      console.log(formData);
+    //   console.log(formData);
 
-      try {
-        const res = await fetch('/upload', {
-          method: 'POST',
-          body: formData,
-        });
-      }
-      catch (err) {
-        console.log(err);
-      }
-    });
+    //   try {
+    //     const res = await fetch('/upload', {
+    //       method: 'POST',
+    //       body: formData,
+    //     });
+    //   }
+    //   catch (err) {
+    //     console.log(err);
+    //   }
+    // });
 
     const uploadFormMultiple = document.getElementById('upload-multiple');
     uploadFormMultiple.addEventListener('submit', async (e) => {
