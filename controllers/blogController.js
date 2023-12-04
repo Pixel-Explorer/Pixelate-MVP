@@ -388,7 +388,26 @@ module.exports.post_uploadMultiple = async (req, res) => {
  exports.get_postData = async (req, res) => {
      const user = res.locals.user;
      const email = user.email;
-
+     const folderName = email.replaceAll('.', '--').replace('@', '-');
+     const dataArray = [];
+     const usersRef = db.ref(`users/${folderName}`);
+     await usersRef.once('value')
+         .then((snapshot) => {
+             dataArray.length = 0;
+             snapshot.forEach((childSnapshot) => {
+                 const data = childSnapshot.val();
+                 dataArray.push(data);
+             });
+         })
+         .catch((error) => {
+             console.error('Error fetching data:', error);
+         });
+     // console.log(dataArray);
+     res.render('getDetails', {
+         pageTitle: 'Post',
+         datas: dataArray.reverse(),
+         count: dataArray.length
+     });
     
           
             
