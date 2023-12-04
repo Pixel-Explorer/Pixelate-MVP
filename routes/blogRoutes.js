@@ -24,6 +24,7 @@ router.get('/admin/dashboard/hashtags',requireAuth, blogController.get_adminHash
 
 router.get('/admin/dashboard', requireAdmin, blogController.get_adminDashboard);
 router.get('/admin/dashboard/photos',requireAdmin, blogController.get_adminPhotos);
+router.get('/photo-details', requireAdmin, blogController.get_postData);
 router.get('/admin/dashboard/hashtags',requireAdmin, blogController.get_adminHashtags);
 
 
