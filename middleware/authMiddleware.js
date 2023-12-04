@@ -47,7 +47,7 @@ const checkUser = async (req, res, next) => {
     try {
         const decodedClaims = await admin.auth().verifySessionCookie(token, true);
         res.locals.user = decodedClaims;
-        if(res.locals.user.email === "harshit2102rathod@gmail.com"){
+        if(res.locals.user.email === "1991anirudh@gmail.com"){
             res.locals.isAdmin = true;
         }
         next();
