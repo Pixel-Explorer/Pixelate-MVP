@@ -55,6 +55,9 @@
           </button>
 
         </form>
+      
+      
+
       </div>
 
       <div class="col-md-6 mt-3 ">
@@ -101,7 +104,51 @@
           
         </form>
 
-      </div>
+      </div><div  style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 1px 1px 0px 1.5px; margin-bottom: 10px; padding: 10px; margin-top: 20px; -ms-flex-align: center; max-width: 600px; font-weight: 600;">Upload Status
+      <div id="progress-container" style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 1px 1px 0px 1.5px; margin-bottom: 10px; padding: 10px; margin-top: 20px; -ms-flex-align: center; max-width: 600px;">
+        <div id="progress-bar" style="width: 0%; height: 10px; background-color: #4CAF50;"></div>
+    </div>
+    <p id="progress-status"></p>
+  </div>
+    <script>
+    // Function to update progress bar and status
+    function updateProgressBar(percentComplete) {
+        var progressBar = document.getElementById('progress-bar');
+        var progressStatus = document.getElementById('progress-status');
+        progressBar.style.width = percentComplete + '%';
+        progressStatus.innerText = percentComplete + '% uploaded';
+    
+        // Show a message when the upload is complete
+        if (percentComplete === 100) {
+            alert('Upload complete! Please refresh the page to continue.');
+        }
+    }
+    
+    // Function to simulate progress
+    function simulateProgress() {
+        // Random time between 10 to 60 seconds
+        var totalTime = Math.random() * (60000 - 10000) + 10000;
+        var startTime = Date.now();
+    
+        function progress() {
+            var currentTime = Date.now();
+            var elapsedTime = currentTime - startTime;
+            var percentComplete = Math.min((elapsedTime / totalTime) * 100, 100);
+            updateProgressBar(percentComplete);
+    
+            // Continue updating until 100% is reached
+            if (percentComplete < 100) {
+                requestAnimationFrame(progress);
+            }
+        }
+    
+        // Start the progress simulation
+        requestAnimationFrame(progress);
+    }
+    
+    // Trigger the progress simulation on form submission or other events
+    // Example: simulateProgress();
+    </script>
     </div>
   </div>
 
@@ -239,6 +286,7 @@
       catch (err) {
         console.log(err);
       }
+      simulateProgress();
     });
 
     const uploadFormMultiple = document.getElementById('upload-multiple');
@@ -266,6 +314,7 @@
       catch (err) {
         console.log(err);
       }
+      simulateProgress();
     });
 
     function createHashtagButton(hashtagText, container) {
