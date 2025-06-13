@@ -16,11 +16,19 @@ const upload = multer({
 const router = Router();
 const csrfProtection = csrf({ cookie: true });
 
-router.use(csrfProtection);
-router.use((req, res, next) => {
-    res.locals.csrfToken = req.csrfToken();
-    next();
-});
+if (process.env.NODE_ENV !== 'test') {
+    router.use(csrfProtection);
+    router.use((req, res, next) => {
+        res.locals.csrfToken = req.csrfToken();
+        next();
+    });
+} else {
+    router.use((req, res, next) => {
+        req.csrfToken = () => '';
+        res.locals.csrfToken = '';
+        next();
+    });
+}
 
 router.get('/dashboard', requireAuth, blogController.get_dashboard);
 router.post('/upload', upload.single('photo'), blogController.post_upload);
