@@ -128,7 +128,8 @@ async function addDataToFirebase(data) {
                 hashtags: hashtagsList,
                 email: data.email,
                 sp: sp,
-                ev: EV
+                ev: EV,
+                timestamp: Date.now()
             };
             // console.log(firebaseData);
             const newData = {
@@ -138,7 +139,8 @@ async function addDataToFirebase(data) {
                 av: aperture.toFixed(5),
                 tv: exposerTime.toFixed(5),
                 ev: EV.toFixed(5),
-                sp: sp.toFixed(3)
+                sp: sp.toFixed(3),
+                timestamp: Date.now()
             };
             db.ref(`/users/${folderName}`).push(firebaseData);
             db.ref(`/photos`).push(newData);
@@ -480,10 +482,16 @@ module.exports.get_adminDashboard = async (req, res) => {
         totalSp: totalUserSP[index].toFixed(3)
     }));
     const userCount = data.length;
+    const photosSnap = await db.ref('photos').once('value');
+    const photos = [];
+    photosSnap.forEach(child => {
+        photos.push(child.val());
+    });
     res.render('admin/adminDashboard', {
         pageTitle: "Admin Dashboard",
         datas: data,
-        usersCount: userCount
+        usersCount: userCount,
+        photos: photos
     });
 }
 module.exports.get_adminPhotos = async (req, res) => {
@@ -530,6 +538,32 @@ module.exports.get_adminHashtags = async (req, res) => {
         count: data.length
     });
 }
+module.exports.get_analytics = async (req, res) => {
+    const photosSnap = await db.ref("photos").once("value");
+    const photos = [];
+    photosSnap.forEach(c => photos.push(c.val()));
+
+    const usersRef = db.ref("users");
+    let documentNames = [];
+    await usersRef.once("value").then(snap => {
+        if (snap.exists()) {
+            documentNames = Object.keys(snap.val());
+        }
+    });
+
+    const users = documentNames.map(u => u.replaceAll("--", ".").replace("-", "@"));
+    const totalImages = [];
+    for (let u of documentNames) {
+        const ref = db.ref(`users/${u}`);
+        await ref.once("value").then(s => {
+            totalImages.push(s.numChildren());
+        });
+    }
+
+    const data = users.map((user, idx) => ({ id: idx + 1, user, imageCount: totalImages[idx] }));
+    res.render("analytics", { pageTitle: "Analytics", datas: data, usersCount: data.length, photos: photos });
+};
+
 async function updateHashtagCount(hashtag, count) {
     const hashtagCountsRef = db.ref('hashtags');
     await hashtagCountsRef.orderByChild("title").equalTo(hashtag).once('value')

@@ -1,9 +1,9 @@
-<%- include('../partials/header'); -%>
+<%- include('partials/header'); -%>
 
 <div class="container mt-4 position-relative z-index-1">
     <div class="pb-3 mb-3 d-flex border-bottom">
         <h4 class="m-0 p-0 me-1">
-            Users
+            Analytics
           </h4>
         <h5 class="m-0 p-0"> (<%= usersCount %>) </h5>
         <style>
@@ -97,7 +97,7 @@ const tableRows = document.querySelectorAll('.table tbody tr:not(.chart-containe
     </div>
 </div>
 
-<%- include('../partials/footer'); -%>
+<%- include('partials/footer'); -%>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     window.photoData = <%- JSON.stringify(photos) %>;

@@ -17,6 +17,7 @@ router.get('/dashboard', requireAuth, blogController.get_dashboard);
 router.post('/upload', upload.single('photo'), blogController.post_upload);
 router.post('/upload-multiple', upload.array('images', 1000), blogController.post_uploadMultiple);
 router.get('/profile', requireAuth, blogController.get_profile);
+router.get('/analytics', requireAuth, blogController.get_analytics);
 // The photo details page is accessible to any authenticated user, including admins.
 router.get('/photo-details', requireAuth, blogController.get_postData);
 
