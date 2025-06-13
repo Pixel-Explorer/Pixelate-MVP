@@ -26,6 +26,10 @@ app.use(blogRoutes);
 
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`App is listening on ${PORT}`)
-})
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`App is listening on ${PORT}`)
+    });
+}
+
+module.exports = app;

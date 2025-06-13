@@ -4,7 +4,7 @@
   "description": "Blog application using Node.js and MongoDB with authentication using JWT",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "start": "nodemon index.js"
   },
   "author": "Harshit Rathod",
@@ -13,7 +13,9 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
