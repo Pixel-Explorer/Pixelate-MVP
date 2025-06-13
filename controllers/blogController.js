@@ -1,27 +1,32 @@
 const exifParser = require('exif-parser');
 const admin = require('firebase-admin');
 
-let adminConfig;
+let serviceAccount;
 try {
     // Prefer credentials mounted by the hosting environment
-    const serviceAccount = require('/etc/secrets/firebase-service-account-key.json');
-    adminConfig = {
-        credential: admin.credential.cert({
-            projectId: serviceAccount.project_id,
-            clientEmail: serviceAccount.client_email,
-            privateKey: serviceAccount.private_key,
-        }),
-        databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
-    };
+    serviceAccount = require('/etc/secrets/firebase-service-account-key.json');
 } catch (err) {
-    // Fallback to explicit environment variables for local development/tests
+    // ignore error; will fall back to env vars
+}
+
+function buildConfig() {
+    if (serviceAccount) {
+        return {
+            credential: admin.credential.cert({
+                projectId: serviceAccount.project_id,
+                clientEmail: serviceAccount.client_email,
+                privateKey: serviceAccount.private_key,
+            }),
+            databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
+        };
+    }
     const firebaseConfig = {
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         privateKey: process.env.FIREBASE_PRIVATE_KEY &&
             process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     };
-    adminConfig = {
+    return {
         credential: admin.credential.cert(firebaseConfig),
         databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
     };
@@ -32,7 +37,7 @@ const moment = require('moment');
 const sharp = require('sharp');
 const fs = require('fs');
 if (!admin.apps.length) {
-    admin.initializeApp(adminConfig);
+    admin.initializeApp(buildConfig());
 }
 const storage = admin.storage();
 const db = admin.database();
