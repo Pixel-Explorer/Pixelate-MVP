@@ -120,7 +120,7 @@ async function addDataToFirebase(data) {
             if (exifData.tags.ApertureValue) {
                 aperture = exifData.tags.ApertureValue;
             }
-            if (exifData.tags.focalLength) {
+            if (exifData.tags.FocalLength) {
                 focalLength = exifData.tags.FocalLength;
             }
             if (exifData.tags.ExposureTime) {
