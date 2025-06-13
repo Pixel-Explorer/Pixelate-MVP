@@ -238,7 +238,8 @@ async function accessHashtagSheet() {
 module.exports.get_dashboard = (req, res) => {
     res.render('home', {
         pageTitle: "Dashboard",
-        hastags: hastags
+        hastags: hastags,
+        csrfToken: req.csrfToken()
     });
 }
 module.exports.get_profile = async (req, res) => {
@@ -285,7 +286,8 @@ module.exports.get_profile = async (req, res) => {
         count: dataArray.length,
         nextCursor,
         prevCursor,
-        firstKey: dataArray.length ? dataArray[0].key : null
+        firstKey: dataArray.length ? dataArray[0].key : null,
+        csrfToken: req.csrfToken()
     });
 }
 module.exports.post_upload = async (req, res) => {
@@ -427,7 +429,8 @@ module.exports.post_uploadMultiple = async (req, res) => {
     res.render('getDetails', {
         pageTitle: 'Post',
         datas: dataArray.reverse(),
-        count: dataArray.length
+        count: dataArray.length,
+        csrfToken: req.csrfToken()
     });
 };
 module.exports.get_adminDashboard = async (req, res) => {
@@ -506,7 +509,8 @@ module.exports.get_adminDashboard = async (req, res) => {
     res.render('admin/adminDashboard', {
         pageTitle: "Admin Dashboard",
         datas: data,
-        usersCount: userCount
+        usersCount: userCount,
+        csrfToken: req.csrfToken()
     });
 }
 module.exports.get_adminPhotos = async (req, res) => {
@@ -550,7 +554,8 @@ module.exports.get_adminPhotos = async (req, res) => {
         count: data.length,
         nextCursor,
         prevCursor,
-        firstKey: data.length ? data[0].key : null
+        firstKey: data.length ? data[0].key : null,
+        csrfToken: req.csrfToken()
     });
 }
 module.exports.get_adminHashtags = async (req, res) => {
@@ -572,7 +577,8 @@ module.exports.get_adminHashtags = async (req, res) => {
     res.render('admin/adminHashtags', {
         pageTitle: "Admin Dashboard",
         datas: data,
-        count: data.length
+        count: data.length,
+        csrfToken: req.csrfToken()
     });
 }
 async function updateHashtagCount(hashtag, count) {

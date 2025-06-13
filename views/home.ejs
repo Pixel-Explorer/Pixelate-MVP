@@ -1,5 +1,6 @@
 <%- include('partials/header'); -%>
 <%- include('partials/sidebar'); -%>
+<input type="hidden" id="csrfToken" value="<%= csrfToken %>">
   <head>
     <!-- Include the necessary Firebase scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
@@ -110,6 +111,7 @@
     function disableSubmitButton(form) {
       form.querySelector('button[type="submit"]').disabled = true;
     }
+    const csrfToken = document.getElementById('csrfToken').value;
     const hashtagInput = document.getElementById('hashtag-input');
     const hashtagList = document.querySelector('.hashtag-list');
     hashtagList.style.display = 'none';
@@ -207,11 +209,13 @@
       const formData = new FormData();
       formData.append('photo', image);
       formData.append('hashtags', JSON.stringify(selectedHashtagsList));
+      formData.append('_csrf', csrfToken);
       console.log(formData);
       try {
         const res = await fetch('/upload', {
           method: 'POST',
           body: formData,
+          headers: { 'CSRF-Token': csrfToken }
         });
       }
        catch (err) {
@@ -230,11 +234,13 @@
         formData.append('images', images[i]);
       }
       formData.append('hashtagsMultiple', JSON.stringify(selectedHashtagsMultipleList));
+      formData.append('_csrf', csrfToken);
       // console.log(formData);
       try {
         const res = await fetch('/upload-multiple', {
           method: 'POST',
           body: formData,
+          headers: { 'CSRF-Token': csrfToken },
         });
       }
        catch (err) {
