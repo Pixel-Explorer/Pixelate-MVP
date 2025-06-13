@@ -8,3 +8,27 @@ services:
     envVars:
       - key: PORT
         value: 8080
+      - key: FIREBASE_API_KEY
+        fromSecret: FIREBASE_API_KEY
+      - key: FIREBASE_AUTH_DOMAIN
+        fromSecret: FIREBASE_AUTH_DOMAIN
+      - key: FIREBASE_PROJECT_ID
+        fromSecret: FIREBASE_PROJECT_ID
+      - key: FIREBASE_STORAGE_BUCKET
+        fromSecret: FIREBASE_STORAGE_BUCKET
+      - key: FIREBASE_MESSAGING_SENDER_ID
+        fromSecret: FIREBASE_MESSAGING_SENDER_ID
+      - key: FIREBASE_APP_ID
+        fromSecret: FIREBASE_APP_ID
+      - key: FIREBASE_MEASUREMENT_ID
+        fromSecret: FIREBASE_MEASUREMENT_ID
+      - key: FIREBASE_CLIENT_EMAIL
+        fromSecret: FIREBASE_CLIENT_EMAIL
+      - key: FIREBASE_PRIVATE_KEY
+        fromSecret: FIREBASE_PRIVATE_KEY
+      - key: GOOGLE_CLIENT_EMAIL
+        fromSecret: GOOGLE_CLIENT_EMAIL
+      - key: GOOGLE_PRIVATE_KEY
+        fromSecret: GOOGLE_PRIVATE_KEY
+      - key: ADMIN_EMAILS
+        fromSecret: ADMIN_EMAILS
