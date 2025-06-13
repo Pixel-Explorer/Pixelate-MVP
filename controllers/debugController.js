@@ -4,7 +4,15 @@ const path = require('path');
 
 const router = Router();
 
-router.get('/_debug/secrets', (req, res) => {
+// Only allow debug access for admins or when not running in production
+const requireDebugAccess = (req, res, next) => {
+  if (process.env.NODE_ENV !== 'production' || res.locals.isAdmin) {
+    return next();
+  }
+  return res.status(404).end();
+};
+
+router.get('/_debug/secrets', requireDebugAccess, (req, res) => {
   const dir = '/etc/secrets';
   let mounted = [];
   const previews = {};
