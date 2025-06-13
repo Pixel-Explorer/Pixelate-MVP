@@ -2,6 +2,7 @@ const { Router } = require('express');
 const blogController = require('../controllers/blogController');
 const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
+const fastCsv = require('fast-csv');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -25,6 +26,43 @@ router.get('/photo-details', requireAuth, blogController.get_postData);
 router.get('/admin/dashboard', requireAdmin, blogController.get_adminDashboard);
 router.get('/admin/dashboard/photos',requireAdmin, blogController.get_adminPhotos);
 router.get('/admin/dashboard/hashtags',requireAdmin, blogController.get_adminHashtags);
+
+// CSV export routes
+router.get('/export/photos.csv', requireAdmin, async (req, res) => {
+    const photos = await blogController.fetchPhotos();
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="photos.csv"');
+    const csvStream = fastCsv.format({ headers: ['ID','User','Aperture','Shutter','EV','BaseValue','ImageURL'] });
+    csvStream.pipe(res);
+    photos.forEach((p) => {
+        const shutter = p.tv ? `1/${Math.round(1/parseFloat(p.tv))}` : '';
+        csvStream.write({ ID: p.id, User: p.user, Aperture: p.av, Shutter: shutter, EV: p.ev, BaseValue: p.sp, ImageURL: p.imageUrl });
+    });
+    csvStream.end();
+});
+
+router.get('/export/hashtags.csv', requireAdmin, async (req, res) => {
+    const hashtags = await blogController.fetchHashtags();
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="hashtags.csv"');
+    const csvStream = fastCsv.format({ headers: ['Title','Count','Locked','AveragePrice'] });
+    csvStream.pipe(res);
+    hashtags.forEach((h) => csvStream.write({ Title: h.title, Count: h.count, Locked: h.utilityTokensLocked, AveragePrice: h.avgPrice }));
+    csvStream.end();
+});
+
+router.get('/export/users.csv', requireAdmin, async (req, res) => {
+    const users = await blogController.fetchUsersSummary();
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
+    const csvStream = fastCsv.format({ headers: ['Username','TotalPhotos','TotalHashtags','TotalWorth','AvgHashPerPhoto'] });
+    csvStream.pipe(res);
+    users.forEach((u) => {
+        const avg = u.imageCount ? (u.hashtagsCount / u.imageCount).toFixed(2) : 0;
+        csvStream.write({ Username: u.user, TotalPhotos: u.imageCount, TotalHashtags: u.hashtagsCount, TotalWorth: u.totalSp.toFixed ? u.totalSp.toFixed(3) : u.totalSp, AvgHashPerPhoto: avg });
+    });
+    csvStream.end();
+});
 
 
 // router.get('/login', authController.login_get);
