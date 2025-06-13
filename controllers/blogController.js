@@ -1,4 +1,5 @@
 const exifParser = require('exif-parser');
+const exifr = require('exifr');
 const admin = require('firebase-admin');
 const firebaseConfig = {
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -10,6 +11,7 @@ const hastags = require('../hastags.json');
 const moment = require('moment');
 const sharp = require('sharp');
 const fs = require('fs');
+const path = require('path');
 admin.initializeApp({
     credential: admin.credential.cert(firebaseConfig),
     databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
@@ -43,7 +45,14 @@ function generateUniqueId(length) {
 async function addDataToFirebase(data) {
     // console.log(data);
     const folderName = data.email.replaceAll('.', '--').replaceAll('@', '-');
-    const exifData = JSON.parse(data.exifData);
+    const rawExif = JSON.parse(data.exifData);
+    const exifData = rawExif.tags ? rawExif : {
+        tags: rawExif,
+        imageSize: {
+            width: rawExif.ExifImageWidth || rawExif.ImageWidth,
+            height: rawExif.ExifImageHeight || rawExif.ImageHeight
+        }
+    };
     try {
         client.authorize(async function (err) {
             if (err) {
@@ -125,6 +134,7 @@ async function addDataToFirebase(data) {
                 name: data.name,
                 exifData: data.exifData,
                 imageUrl: data.imageUrl,
+                previewUrl: data.previewUrl,
                 hashtags: hashtagsList,
                 email: data.email,
                 sp: sp,
@@ -277,44 +287,42 @@ module.exports.post_upload = async (req, res) => {
     const folderName = email.replaceAll('.', '--').replaceAll('@', '-');
     const fileName = Date.now() + '-' + file.originalname.replaceAll('.', '-');
     const fileRef = bucket.file(folderName + fileName);
+    const previewRef = bucket.file(folderName + 'preview-' + fileName + '.jpg');
     const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
+    const previewUrl = await previewRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
     const hashtagsList = hashtags.map((item) => {
         return item.replace('#', '').replaceAll(' ', '').replaceAll('\n', '');
     })
-    sharp(file.buffer)
-        .resize({ width: 300 }) // Adjust the dimensions as needed
-        .toBuffer()
-        .then((resizedImageData) => {
-            const uploadStream = fileRef.createWriteStream({
-                metadata: {
-                    contentType: file.mimetype,
-                },
-            });
-            uploadStream.on('error', (err) => {
-                console.error('Error uploading file:', err);
-                res.status(500).send('Error uploading file.');
-            });
-            uploadStream.on('finish', () => {
-                // Now, store the EXIF data and image URL in the Firebase Realtime Database
-                const exifData = exifParser.create(file.buffer).parse();
-                const serializedExifData = JSON.stringify(exifData);
-                // Store the EXIF data and image URL in the database
-                const data = {
-                    name: fileName,
-                    exifData: serializedExifData,
-                    imageUrl: imageUrl,
-                    hashtags: hashtags,
-                    email: email
-                }
-                addDataToFirebase(data);
-                res.redirect('/dashboard');
-            });
-            uploadStream.end(resizedImageData);
-        })
-        .catch((error) => {
-            console.error('Error resizing image:', error);
-            res.status(500).send('Internal Server Error');
-        });
+    const [resizedImageData, thumbnailData] = await Promise.all([
+        sharp(file.buffer).resize({ width: 300 }).toBuffer(),
+        sharp(file.buffer).resize({ width: 150 }).jpeg().toBuffer()
+    ]);
+    await Promise.all([
+        fileRef.save(resizedImageData, { metadata: { contentType: file.mimetype } }),
+        previewRef.save(thumbnailData, { metadata: { contentType: 'image/jpeg' } })
+    ]);
+    let metadata;
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (['.cr2', '.nef', '.dng'].includes(ext)) {
+        try {
+            metadata = await exifr.parse(file.buffer);
+        } catch (err) {
+            metadata = {};
+        }
+    } else {
+        metadata = exifParser.create(file.buffer).parse();
+    }
+    const serializedExifData = JSON.stringify(metadata);
+    const data = {
+        name: fileName,
+        exifData: serializedExifData,
+        imageUrl: imageUrl,
+        previewUrl: previewUrl,
+        hashtags: hashtags,
+        email: email
+    }
+    addDataToFirebase(data);
+    res.redirect('/dashboard');
     hashtagsList.forEach((hashtag) => {
         updateHashtagCount(hashtag, 1);
     });
@@ -330,50 +338,43 @@ module.exports.post_uploadMultiple = async (req, res) => {
   });
 
   for (const file of files) {
-    // Store the file in Firebase Storage
     const folderName = email.replaceAll('.', '--').replaceAll('@', '-');
     const fileName = Date.now() + '-' + file.originalname.replaceAll('.', '-');
     const fileRef = bucket.file(folderName + fileName);
+    const previewRef = bucket.file(folderName + 'preview-' + fileName + '.jpg');
     const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
+    const previewUrl = await previewRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
 
-    sharp(file.buffer)
-      .resize({ width: 300 }) // Adjust the dimensions as needed
-      .toBuffer()
-      .then((resizedImageData) => {
-        const uploadStream = fileRef.createWriteStream({
-          metadata: {
-            contentType: file.mimetype,
-          },
-        });
+    const [resizedImageData, thumbnailData] = await Promise.all([
+      sharp(file.buffer).resize({ width: 300 }).toBuffer(),
+      sharp(file.buffer).resize({ width: 150 }).jpeg().toBuffer()
+    ]);
+    await Promise.all([
+      fileRef.save(resizedImageData, { metadata: { contentType: file.mimetype } }),
+      previewRef.save(thumbnailData, { metadata: { contentType: 'image/jpeg' } })
+    ]);
+    let metadata;
+    const ext = path.extname(file.originalname).toLowerCase();
+    if ([ '.cr2', '.nef', '.dng' ].includes(ext)) {
+      try {
+        metadata = await exifr.parse(file.buffer);
+      } catch (err) {
+        metadata = {};
+      }
+    } else {
+      metadata = exifParser.create(file.buffer).parse();
+    }
+    const serializedExifData = JSON.stringify(metadata);
+    const data = {
+      name: fileName,
+      exifData: serializedExifData,
+      imageUrl: imageUrl,
+      previewUrl: previewUrl,
+      hashtags: hashtags,
+      email: email,
+    };
 
-        uploadStream.on('error', (err) => {
-          console.error('Error uploading file:', err);
-          res.status(500).send('Error uploading file.');
-        });
-
-        uploadStream.on('finish', () => {
-          // Now, store the EXIF data and image URL in the Firebase Realtime Database
-          const exifData = exifParser.create(file.buffer).parse();
-          const serializedExifData = JSON.stringify(exifData);
-
-          // Store the EXIF data and image URL in the database
-          const data = {
-            name: fileName,
-            exifData: serializedExifData,
-            imageUrl: imageUrl,
-            hashtags: hashtags,
-            email: email,
-          };
-
-          addDataToFirebase(data);
-        });
-
-        uploadStream.end(resizedImageData);
-      })
-      .catch((error) => {
-        console.error('Error resizing image:', error);
-        res.status(500).send('Internal Server Error');
-      });
+    addDataToFirebase(data);
   }
 
   hashtagsList.forEach((hashtag) => {
