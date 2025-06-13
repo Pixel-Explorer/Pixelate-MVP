@@ -25,3 +25,16 @@ Ensure these files contain your own credentials before starting the application.
    You can also use `npm start` if you have updated the `start` script accordingly.
 
 The application serves static files from the `public` directory and uses EJS templates in `views`.
+
+## Deployment
+
+This repository contains a `render.yaml` file for deploying the app to
+[Render](https://render.com). To deploy:
+
+1. Push your copy of the repository to GitHub.
+2. Log in to Render and choose **New &rarr; Blueprint**.
+3. Select your repository so Render can read `render.yaml` and create the web
+   service.
+4. Provide any required environment variables (for example `PORT` or Firebase
+   credentials) in the Render dashboard.
+5. Click **Apply** to provision the service and start the deployment.
