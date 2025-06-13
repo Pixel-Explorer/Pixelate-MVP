@@ -6,6 +6,11 @@ jest.mock('../middleware/authMiddleware', () => ({
   requireAdmin: (req, res, next) => next(),
 }));
 
+jest.mock('csurf', () => () => (req, res, next) => {
+  req.csrfToken = () => 'testtoken';
+  next();
+});
+
 jest.mock('../controllers/blogController', () => ({
   post_upload: (req, res) => res.redirect('/dashboard'),
   post_uploadMultiple: (req, res) => res.redirect('/dashboard'),
@@ -30,6 +35,8 @@ jest.mock('../controllers/blogController', () => ({
   get_adminDashboard: (req, res) => res.sendStatus(200), // stub
   get_adminPhotos: (req, res) => res.sendStatus(200), // stub
   get_adminHashtags: (req, res) => res.sendStatus(200), // stub
+  get_profile: (req, res) => res.sendStatus(200), // stub
+  get_postData: (req, res) => res.sendStatus(200), // stub
 }));
 
 const request = require('supertest');

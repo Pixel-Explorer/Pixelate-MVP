@@ -23,9 +23,9 @@ jest.mock('../controllers/blogController', () => ({
 const request = require('supertest');
 const app = require('../index');
 
-describe('GET /dashboard', () => {
-  it('should return 200', async () => {
-    const res = await request(app).get('/dashboard');
-    expect(res.statusCode).toBe(200);
+describe('Unknown routes', () => {
+  it('returns 404 for nonexistent path', async () => {
+    const res = await request(app).get('/no-such-page');
+    expect(res.statusCode).toBe(404);
   });
 });

@@ -32,6 +32,11 @@ app.use(authRoutes);
 app.use(blogRoutes);
 app.use(debugRoutes);
 
+// handle 404s
+app.use((req, res) => {
+    res.status(404).render('404');
+});
+
 
 
 const PORT = process.env.PORT || 8080;
