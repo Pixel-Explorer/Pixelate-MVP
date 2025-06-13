@@ -1,0 +1,67 @@
+<div class="tab-container mt-4">
+  <div class="tab-buttons">
+    <button class="tab-link active" data-tab="status">Upload Status</button>
+    <button class="tab-link" data-tab="metadata">Photo Metadata</button>
+    <button class="tab-link" data-tab="activity">Activity Log</button>
+    <button class="tab-link" data-tab="help">Help</button>
+  </div>
+  <div class="tab-content">
+    <div id="status" class="tab-pane active">
+      <p>Check progress of your uploads here.</p>
+    </div>
+    <div id="metadata" class="tab-pane">
+      <p>View extracted EXIF data after upload.</p>
+    </div>
+    <div id="activity" class="tab-pane">
+      <p>Recent actions will appear in this log.</p>
+    </div>
+    <div id="help" class="tab-pane">
+      <p>Need assistance? Find tips here.</p>
+    </div>
+  </div>
+</div>
+<style>
+  .tab-buttons {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  .tab-link {
+    margin-right: 5px;
+    padding: 6px 12px;
+    border: 1px solid #0e0d10;
+    background-color: #A3C6E5;
+    color: #0e0d10;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .tab-link.active {
+    background-color: #0e0d10;
+    color: #A3C6E5;
+  }
+  .tab-pane {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border: 1px solid #0e0d10;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  .tab-pane.active {
+    display: block;
+    opacity: 1;
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const links = document.querySelectorAll('.tab-link');
+    const panes = document.querySelectorAll('.tab-pane');
+    links.forEach(link => {
+      link.addEventListener('click', function () {
+        links.forEach(l => l.classList.remove('active'));
+        panes.forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById(this.dataset.tab).classList.add('active');
+      });
+    });
+  });
+</script>
