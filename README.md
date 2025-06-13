@@ -52,3 +52,22 @@ This repository contains a `render.yaml` file for deploying the app to
 4. Provide any required environment variables (for example `PORT` or Firebase
    credentials) in the Render dashboard.
 5. Click **Apply** to provision the service and start the deployment.
+
+## Firebase Realtime Database Rules
+
+The repository also includes a `database.rules.json` file for the Firebase
+Realtime Database:
+
+```json
+{
+  "rules": {
+    "hashtags": { ".indexOn": ["title"] }
+  }
+}
+```
+
+Deploy these rules using the Firebase CLI:
+
+```bash
+firebase deploy --only database
+```
