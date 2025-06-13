@@ -1,28 +1,22 @@
 <%- include('partials/header'); -%>
 
 <div class="pb-3 mb-3 d-flex border-bottom container">
-    <h4 class="m-0 p-0 me-1">All Photos</h4>
-    <h5 class="m-0 p-0"> (<span id="totalCount"><%= count %></span>)</h5>
+    <h4 class="m-0 p-0 me-1">#<%= hashtag && hashtag.title ? hashtag.title : title %></h4>
+    <h5 class="m-0 p-0"> (<%= images.length %>)</h5>
 </div>
-
+<div class="container mb-3">
+    <% if (hashtag) { %>
+    <p>Total Photos: <%= hashtag.count %></p>
+    <p>Total Worth Locked: <%= hashtag.utilityTokensLocked %></p>
+    <p>Average Photo Worth: <%= hashtag.avgPrice %></p>
+    <% } %>
+</div>
 <div class="container">
     <div class="row" id="cardContainer">
-        <% for (let i = 0; i < datas.length; i++) { %>
+        <% for (let i = 0; i < images.length; i++) { %>
         <div class="col-md-4 mb-4 <%= i >= 12 ? 'd-none' : '' %>">
             <div class="card">
-                <img src="<%= datas[i].imageUrl %>" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Hashtags</h5>
-                    <p class="card-text">
-                        <% if (Array.isArray(datas[i].hashtags)) { %>
-                        <% for (let hashtag of datas[i].hashtags) { %>
-                        <a href="/hashtags/<%= hashtag %>" class="badge bg-primary me-1">#<%= hashtag %></a>
-                        <% } %>
-                        <% } %>
-                    </p>
-                    <p class="card-text">Exposure Value: <%= datas[i].ev %></p>
-                    <p class="card-text">Photo Value: <%= datas[i].sp %></p>
-                </div>
+                <img src="<%= images[i] %>" class="card-img-top" alt="...">
             </div>
         </div>
         <% } %>
@@ -33,12 +27,13 @@
 </div>
 
 <%- include('partials/footer'); -%>
-
 <script>
     const loadMoreBtn = document.getElementById('loadMoreBtn');
-    let startIndex = 12; // Tracks the starting index of hidden images
+    let startIndex = 12;
     const hiddenCards = document.querySelectorAll('.col-md-4.d-none');
-
+    if(hiddenCards.length <= 12){
+        loadMoreBtn.style.display = 'none';
+    }
     loadMoreBtn.addEventListener('click', () => {
         let count = 0;
         for (let i = startIndex; i < hiddenCards.length && count < 100; i++) {
@@ -46,7 +41,6 @@
             count++;
         }
         startIndex += count;
-
         if (startIndex >= hiddenCards.length) {
             loadMoreBtn.style.display = 'none';
         }

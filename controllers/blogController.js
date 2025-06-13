@@ -565,3 +565,51 @@ async function updateHashtagCount(hashtag, count) {
             })
         })
 }
+
+module.exports.get_hashtag = async (req, res) => {
+    const title = req.params.title.replace('#','');
+    let hashtagData = null;
+    await db.ref('hashtags').orderByChild('title').equalTo(title).once('value')
+        .then(snapshot => {
+            snapshot.forEach(child => {
+                hashtagData = child.val();
+            });
+        });
+    const images = [];
+    await db.ref('users').once('value')
+        .then(snapshot => {
+            snapshot.forEach(userSnap => {
+                userSnap.forEach(photoSnap => {
+                    const data = photoSnap.val();
+                    if (data.hashtags && Array.isArray(data.hashtags) && data.hashtags.includes(title)) {
+                        if (Array.isArray(data.imageUrl)) {
+                            images.push(data.imageUrl[0]);
+                        } else {
+                            images.push(data.imageUrl);
+                        }
+                    }
+                });
+            });
+        });
+    res.render('hashtag', {
+        pageTitle: `#${title}`,
+        title,
+        hashtag: hashtagData,
+        images
+    });
+};
+
+module.exports.post_hashtag = async (req, res) => {
+    const { title, value, imageUrl } = req.body;
+    if (!title) return res.redirect('back');
+    const newTag = {
+        title: title.replace('#','').replace(/\s+/g,''),
+        count: 0,
+        desiredMean: value || 0,
+        utilityTokensLocked: 0,
+        avgPrice: 0,
+        imageUrl: imageUrl || ''
+    };
+    await db.ref('hashtags').push(newTag);
+    res.redirect('/admin/dashboard/hashtags');
+};
