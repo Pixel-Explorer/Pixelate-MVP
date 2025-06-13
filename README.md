@@ -99,3 +99,7 @@ npm test
 
 This project uses Jest for testing, and `NODE_ENV` defaults to `test` when the suite runs.
 
+
+## License
+
+This project is licensed under the ISC License. See [LICENSE](LICENSE) for details.
