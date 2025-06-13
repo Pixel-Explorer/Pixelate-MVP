@@ -17,7 +17,7 @@
                     <p class="card-text">
                         <% if (Array.isArray(datas[i].hashtags)) { %>
                         <% for (let hashtag of datas[i].hashtags) { %>
-                        <span class="badge bg-primary me-1"><%= hashtag %></span>
+                        <a href="/hashtags/<%= encodeURIComponent(hashtag) %>" class="badge bg-primary me-1"><%= hashtag %></a>
                         <% } %>
                         <% } %>
                     </p>

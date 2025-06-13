@@ -6,6 +6,17 @@ jest.mock('../middleware/authMiddleware', () => ({
   requireAdmin: (req, res, next) => next(),
 }));
 
+jest.mock('firebase-admin', () => ({
+  auth: () => ({
+    createSessionCookie: jest.fn(() => Promise.resolve('fakeSession')),
+  }),
+  credential: { applicationDefault: jest.fn(), cert: jest.fn() },
+  initializeApp: jest.fn(),
+  storage: jest.fn(() => ({ bucket: jest.fn() })),
+  database: jest.fn(() => ({})),
+  apps: [],
+}));
+
 const request = require('supertest');
 const app = require('../index');
 

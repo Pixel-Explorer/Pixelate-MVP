@@ -29,6 +29,7 @@ router.post('/upload-multiple', upload.array('images', 1000), blogController.pos
 router.get('/profile', requireAuth, blogController.get_profile);
 // The personal gallery page is accessible to any authenticated user, including admins.
 router.get('/personal-gallery', requireAuth, blogController.get_postData);
+router.get('/hashtags/:tag', requireAuth, blogController.get_hashtag);
 
 //Admin Routes
 

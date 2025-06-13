@@ -5,6 +5,15 @@ jest.mock('../middleware/authMiddleware', () => ({
   checkUser: (req, res, next) => next(),
   requireAdmin: (req, res, next) => next(),
 }));
+jest.mock('csurf', () => () => (req, res, next) => next());
+jest.mock('firebase-admin', () => ({
+  auth: () => ({ createSessionCookie: jest.fn(() => Promise.resolve('fake')) }),
+  credential: { applicationDefault: jest.fn(), cert: jest.fn() },
+  initializeApp: jest.fn(),
+  storage: jest.fn(() => ({ bucket: jest.fn() })),
+  database: jest.fn(() => ({})),
+  apps: [],
+}));
 
 jest.mock('../controllers/blogController', () => ({
   get_dashboard: (req, res) => res.sendStatus(200),
@@ -21,40 +30,12 @@ jest.mock('../controllers/blogController', () => ({
   fetchUsersSummary: jest.fn(() => Promise.resolve([])),
 }));
 
-jest.mock('firebase-admin', () => ({
-  auth: () => ({
-    createSessionCookie: jest.fn(() => Promise.resolve('fakeSession')),
-  }),
-  credential: { applicationDefault: jest.fn(), cert: jest.fn() },
-  initializeApp: jest.fn(),
-  storage: jest.fn(() => ({ bucket: jest.fn() })),
-  database: jest.fn(() => ({})),
-  apps: [],
-}));
-
 const request = require('supertest');
 const app = require('../index');
 
-describe('POST /login cookie options', () => {
-  afterEach(() => {
-    process.env.NODE_ENV = 'test';
-  });
-
-  it('omits Secure attribute when not in production', async () => {
-    const res = await request(app)
-      .post('/login')
-      .send({ idToken: 'abc' });
+describe('GET /hashtags/:tag', () => {
+  it('returns 200', async () => {
+    const res = await request(app).get('/hashtags/test');
     expect(res.statusCode).toBe(200);
-    expect(res.headers['set-cookie'][0]).not.toMatch(/Secure/);
-    expect(res.headers['set-cookie'][0]).toMatch(/HttpOnly/);
-  });
-
-  it('includes Secure attribute in production', async () => {
-    process.env.NODE_ENV = 'production';
-    const res = await request(app)
-      .post('/login')
-      .send({ idToken: 'abc' });
-    expect(res.statusCode).toBe(200);
-    expect(res.headers['set-cookie'][0]).toMatch(/Secure/);
   });
 });

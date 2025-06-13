@@ -439,11 +439,39 @@ module.exports.post_uploadMultiple = async (req, res) => {
         .catch((error) => {
             console.error('Error fetching data:', error);
         });
-    res.render('getDetails', {
-        pageTitle: 'Post',
-        datas: dataArray.reverse(),
-        count: dataArray.length,
-        csrfToken: req.csrfToken()
+  res.render('getDetails', {
+      pageTitle: 'Post',
+      datas: dataArray.reverse(),
+      count: dataArray.length,
+      csrfToken: req.csrfToken()
+  });
+};
+
+module.exports.get_hashtag = async (req, res) => {
+    const tag = req.params.tag.replace('#', '');
+    const usersRef = db.ref('users');
+    const data = [];
+    await usersRef.once('value')
+        .then((snapshot) => {
+            snapshot.forEach((userSnap) => {
+                userSnap.forEach((child) => {
+                    const val = child.val();
+                    const tags = val.hashtags || [];
+                    if (tags.includes(tag)) {
+                        data.push(val);
+                    }
+                });
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+    res.render('hashtag', {
+        pageTitle: `#${tag}`,
+        tag,
+        datas: data,
+        count: data.length,
+        csrfToken: req.csrfToken(),
     });
 };
 module.exports.get_adminDashboard = async (req, res) => {
