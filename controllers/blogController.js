@@ -41,7 +41,6 @@ function generateUniqueId(length) {
     return uniqueId;
 }
 async function addDataToFirebase(data) {
-    // console.log(data);
     const folderName = data.email.replaceAll('.', '--').replaceAll('@', '-');
     const exifData = JSON.parse(data.exifData);
     try {
@@ -120,7 +119,6 @@ async function addDataToFirebase(data) {
             // const finalArray = dataArray.concat(hashtagsList)
             // Define the data you want to append
             // const values = [finalArray.map(item => item)];
-            // console.log(values);
             const firebaseData = {
                 name: data.name,
                 exifData: data.exifData,
@@ -130,7 +128,6 @@ async function addDataToFirebase(data) {
                 sp: sp,
                 ev: EV
             };
-            // console.log(firebaseData);
             const newData = {
                 id: uniqueId,
                 user: data.email,
@@ -147,29 +144,17 @@ async function addDataToFirebase(data) {
         console.error('Error:', error);
     }
 }
-function addDataToFile(newData) {
-    let existingData = [];
-    try {
-        existingData = JSON.parse(fs.readFileSync('data.json', 'utf8'));
-    } catch (error) {
-        console.log(error);
-    }
-    const updatedData = [...existingData, newData];
-    fs.writeFileSync('data.json', JSON.stringify(updatedData, null, 2));
-}
 async function accessSpreadsheet() {
     try {
         const sheetsAPI = await sheets.spreadsheets.values;
         const spreadsheetId = '1tUX5QR7Ap47r6iIfdDHZsm4p8UoYw7jbxzSGRyt_bsk'; // Replace with your Google Spreadsheet ID
         const range = 'Hashtag Values!A3:XFD'; // Replace with the desired sheet and column
-        // const authClient = await auth.getClient();
         const response = await sheetsAPI.get({
             auth: client,
             spreadsheetId,
             range,
         });
         const values = response.data.values;
-        // console.log(values);
         const data = values.map((value) => ({
             title: value[0],
             count: value[8] || 0,
@@ -178,7 +163,6 @@ async function accessSpreadsheet() {
             utilityTokensLocked: value[7] || 0,
             avgPrice: value[7] / value[8] || 0
         }))
-        console.log(data);
         db.ref(`/hashtags`).set(data);
     } catch (error) {
         console.error('Error:', error);
@@ -212,7 +196,6 @@ function calculateTotalSellingPrice(photoEV, hashtagsData) {
         .then((sellingPrices) => {
             // Sum up all the individual selling prices
             const totalSellingPrice = sellingPrices.reduce((total, price) => total + price, 0);
-            // console.log(totalSellingPrice);
             return totalSellingPrice;
         });
 }
@@ -412,18 +395,17 @@ module.exports.post_uploadMultiple = async (req, res) => {
      const folderName = email.replaceAll('.', '--').replace('@', '-');
      const dataArray = [];
      const usersRef = db.ref(`users/${folderName}`);
-     await usersRef.once('value')
-         .then((snapshot) => {
-             dataArray.length = 0;
-             snapshot.forEach((childSnapshot) => {
-                 const data = childSnapshot.val();
-                 dataArray.push(data);
-             });
-         })
-         .catch((error) => {
-             console.error('Error fetching data:', error);
-         });
-     // console.log(dataArray);
+    await usersRef.once('value')
+        .then((snapshot) => {
+            dataArray.length = 0;
+            snapshot.forEach((childSnapshot) => {
+                const data = childSnapshot.val();
+                dataArray.push(data);
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
     res.render('getDetails', {
         pageTitle: 'Post',
         datas: dataArray.reverse(),
@@ -437,7 +419,7 @@ module.exports.get_adminDashboard = async (req, res) => {
         if (snapshot.exists()) {
             documentNames = Object.keys(snapshot.val());
         } else {
-            console.log('No documents found.');
+            console.warn('No documents found.');
         }
     }).catch((error) => {
         console.error('Error retrieving document names:', error);
@@ -469,7 +451,6 @@ module.exports.get_adminDashboard = async (req, res) => {
                 const documentHashtagsCount = countHashtags(document);
                 totalHashtagsCount += documentHashtagsCount;
             });
-            // console.log('Total Number of Hashtags:', totalHashtagsCount);
         })
         totalHashtags.push(totalHashtagsCount);
     }
@@ -482,7 +463,6 @@ module.exports.get_adminDashboard = async (req, res) => {
                 let totalSP = 0;
                 snapshot.forEach((childSnapshot) => {
                     const userData = childSnapshot.val();
-                    // console.log(userData.sp);
                     if (userData && userData.sp) {
                         totalSP += userData.sp;
                     }
@@ -568,7 +548,6 @@ module.exports.get_adminHashtags = async (req, res) => {
         .catch((error) => {
             console.error('Error fetching data:', error);
         });
-    // console.log(data);
     res.render('admin/adminHashtags', {
         pageTitle: "Admin Dashboard",
         datas: data,

@@ -1,7 +1,7 @@
 const admin = require('firebase-admin');
 
 const handleErrors = (err) => {
-    console.log(err.message, err.code);
+    console.error(err.message, err.code);
     let errors = { email: '', password: '' };
 
     if (err.message === 'Incorrect Email') {
@@ -22,7 +22,6 @@ const handleErrors = (err) => {
     if (err.message.includes('users validation failed')) {
         Object.values(err.errors).forEach(({ properties }) => {
             errors[properties.path] = properties.message;
-            // console.log(properties);
         });
     }
 
