@@ -403,37 +403,12 @@ module.exports.post_uploadMultiple = async (req, res) => {
              console.error('Error fetching data:', error);
          });
      // console.log(dataArray);
-     res.render('getDetails', {
-         pageTitle: 'Post',
-         datas: dataArray.reverse(),
-         count: dataArray.length
-     });
-    
-          
-            
-    
-async function updateHashtagCount(hashtag, count) {
-  
-    const folderName = email.replaceAll('.', '--').replaceAll('@', '-');
-    const dataArray = [];
-    const usersRef = db.ref(`users/${folderName}`);
-    await usersRef.once('value')
-        .then((snapshot) => {
-            dataArray.length = 0;
-            snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                dataArray.push(data);
-            });
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
     res.render('getDetails', {
         pageTitle: 'Post',
         datas: dataArray.reverse(),
         count: dataArray.length
     });
-}};
+};
 module.exports.get_adminDashboard = async (req, res) => {
     const usersRef = db.ref('users');
     var documentNames;
