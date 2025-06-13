@@ -442,7 +442,8 @@ module.exports.post_uploadMultiple = async (req, res) => {
 };
 module.exports.get_adminDashboard = async (req, res) => {
     const usersRef = db.ref('users');
-    var documentNames;
+    // Initialize to an empty array so subsequent logic still runs if no users exist
+    var documentNames = [];
     await usersRef.once('value', (snapshot) => {
         if (snapshot.exists()) {
             documentNames = Object.keys(snapshot.val());
