@@ -320,40 +320,40 @@ module.exports.post_upload = async (req, res) => {
     const hashtagsList = hashtags.map((item) => {
         return item.replace('#', '').replaceAll(' ', '').replaceAll('\n', '');
     })
-    sharp(file.buffer)
-        .resize({ width: 300 }) // Adjust the dimensions as needed
-        .toBuffer()
-        .then((resizedImageData) => {
-            const uploadStream = fileRef.createWriteStream({
-                metadata: {
-                    contentType: file.mimetype,
-                },
-            });
-            uploadStream.on('error', (err) => {
-                console.error('Error uploading file:', err);
-                res.status(500).send('Error uploading file.');
-            });
-            uploadStream.on('finish', () => {
-                // Now, store the EXIF data and image URL in the Firebase Realtime Database
-                const exifData = exifParser.create(file.buffer).parse();
-                const serializedExifData = JSON.stringify(exifData);
-                // Store the EXIF data and image URL in the database
-                const data = {
-                    name: fileName,
-                    exifData: serializedExifData,
-                    imageUrl: imageUrl,
-                    hashtags: hashtags,
-                    email: email
-                }
-                addDataToFirebase(data);
-                res.redirect('/dashboard');
-            });
-            uploadStream.end(resizedImageData);
-        })
-        .catch((error) => {
-            console.error('Error resizing image:', error);
-            res.status(500).send('Internal Server Error');
-        });
+    let resizedImageData;
+    try {
+        resizedImageData = await sharp(file.buffer)
+            .resize({ width: 300 })
+            .toBuffer();
+    } catch (error) {
+        console.warn('Sharp failed to process image, using original buffer:', error.message);
+        resizedImageData = file.buffer;
+    }
+
+    const uploadStream = fileRef.createWriteStream({
+        metadata: {
+            contentType: file.mimetype,
+        },
+    });
+    uploadStream.on('error', (err) => {
+        console.error('Error uploading file:', err);
+        res.status(500).send('Error uploading file.');
+    });
+    uploadStream.on('finish', () => {
+        // Now, store the EXIF data and image URL in the Firebase Realtime Database
+        const exifData = exifParser.create(file.buffer).parse();
+        const serializedExifData = JSON.stringify(exifData);
+        const data = {
+            name: fileName,
+            exifData: serializedExifData,
+            imageUrl: imageUrl,
+            hashtags: hashtags,
+            email: email
+        }
+        addDataToFirebase(data);
+        res.redirect('/dashboard');
+    });
+    uploadStream.end(resizedImageData);
     hashtagsList.forEach((hashtag) => {
         updateHashtagCount(hashtag, 1);
     });
@@ -375,44 +375,43 @@ module.exports.post_uploadMultiple = async (req, res) => {
     const fileRef = bucket.file(folderName + fileName);
     const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
 
-    sharp(file.buffer)
-      .resize({ width: 300 }) // Adjust the dimensions as needed
-      .toBuffer()
-      .then((resizedImageData) => {
-        const uploadStream = fileRef.createWriteStream({
-          metadata: {
-            contentType: file.mimetype,
-          },
-        });
+    let resizedImageData;
+    try {
+      resizedImageData = await sharp(file.buffer)
+        .resize({ width: 300 })
+        .toBuffer();
+    } catch (error) {
+      console.warn('Sharp failed to process image, using original buffer:', error.message);
+      resizedImageData = file.buffer;
+    }
 
-        uploadStream.on('error', (err) => {
-          console.error('Error uploading file:', err);
-          res.status(500).send('Error uploading file.');
-        });
+    const uploadStream = fileRef.createWriteStream({
+      metadata: {
+        contentType: file.mimetype,
+      },
+    });
 
-        uploadStream.on('finish', () => {
-          // Now, store the EXIF data and image URL in the Firebase Realtime Database
-          const exifData = exifParser.create(file.buffer).parse();
-          const serializedExifData = JSON.stringify(exifData);
+    uploadStream.on('error', (err) => {
+      console.error('Error uploading file:', err);
+      res.status(500).send('Error uploading file.');
+    });
 
-          // Store the EXIF data and image URL in the database
-          const data = {
-            name: fileName,
-            exifData: serializedExifData,
-            imageUrl: imageUrl,
-            hashtags: hashtags,
-            email: email,
-          };
+    uploadStream.on('finish', () => {
+      const exifData = exifParser.create(file.buffer).parse();
+      const serializedExifData = JSON.stringify(exifData);
 
-          addDataToFirebase(data);
-        });
+      const data = {
+        name: fileName,
+        exifData: serializedExifData,
+        imageUrl: imageUrl,
+        hashtags: hashtags,
+        email: email,
+      };
 
-        uploadStream.end(resizedImageData);
-      })
-      .catch((error) => {
-        console.error('Error resizing image:', error);
-        res.status(500).send('Internal Server Error');
-      });
+      addDataToFirebase(data);
+    });
+
+    uploadStream.end(resizedImageData);
   }
 
   hashtagsList.forEach((hashtag) => {
