@@ -8,14 +8,13 @@ const requireAuth = (req, res, next) => {
         .verifySessionCookie(sessionCookie, true)
         .then((decodedClaims) => {
             if(!decodedClaims){
-                res.redirect('/');
-            }else{
-                next();
+                return res.status(401).json({ error: 'User is not authenticated' });
             }
+            next();
         })
         .catch((error) => {
             console.log(error);
-            res.redirect('/');
+            res.status(401).json({ error: 'User is not authenticated' });
         });
 }
 
@@ -27,16 +26,16 @@ const requireAdmin = (req, res, next) => {
         .verifySessionCookie(sessionCookie, true)
         .then((decodedClaims) => {
             if(!decodedClaims){
-                res.redirect('/');
-            }else if(!res.locals.isAdmin){
-                res.redirect('/dashboard');
-            }else{
-                next();
+                return res.status(401).json({ error: 'User is not authenticated' });
             }
+            if(!res.locals.isAdmin){
+                return res.status(403).json({ error: 'Admin privileges required' });
+            }
+            next();
         })
         .catch((error) => {
             console.log(error);
-            res.redirect('/');
+            res.status(401).json({ error: 'User is not authenticated' });
         });
 }
 
