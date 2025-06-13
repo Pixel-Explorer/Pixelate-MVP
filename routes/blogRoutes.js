@@ -3,6 +3,7 @@ const blogController = require('../controllers/blogController');
 const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const fastCsv = require('fast-csv');
+const csrf = require('csurf');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -13,6 +14,13 @@ const upload = multer({
 
 
 const router = Router();
+const csrfProtection = csrf({ cookie: true });
+
+router.use(csrfProtection);
+router.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
 
 router.get('/dashboard', requireAuth, blogController.get_dashboard);
 router.post('/upload', upload.single('photo'), blogController.post_upload);

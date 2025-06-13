@@ -3,6 +3,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@angular/material@latest/prebuilt-themes/indigo-pink.css" rel="stylesheet">
   <form action="/login" style="border: 2px solid #0e0d10; padding: 50px; border-radius: 6px; box-shadow: #0e0d10 2px 2px 1px 2px;">
+    <input type="hidden" id="csrfToken" name="_csrf" value="<%= csrfToken %>">
     <h2 class="none" style="border: 2px #0e0d10; background: #eef7ff; padding: 25px; font-weight: 300; box-shadow: #0e0d10 1px 1px 1px 2px; border-radius: 2px;">Login<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" style="margin-left: 10px; margin-right: 10px;" class="bi bi-toggle-off" viewBox="0 0 16 16">
       <path d="M11 4a4 4 0 0 1 0 8H8a4.992 4.992 0 0 0 2-4 4.992 4.992 0 0 0-2-4zm-6 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8M0 8a5 5 0 0 0 5 5h6a5 5 0 0 0 0-10H5a5 5 0 0 0-5 5"/>
     </svg></h2>
@@ -38,6 +39,7 @@
     const form = document.querySelector('form');
     const emailError = document.querySelector('.email.error');
     const passError = document.querySelector('.password.error');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -53,10 +55,11 @@
       firebase.auth().signInWithEmailAndPassword(email, password)
         .then(({ user }) => {
           return user.getIdToken().then((idToken) => {
-            return fetch('/login', {
+          return fetch('/login', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken
               },
               body: JSON.stringify({ idToken, email })
             });
@@ -83,10 +86,11 @@
         .then((result) => {
           const { user } = result;
           return user.getIdToken().then((idToken) => {
-            return fetch('/login', {
+           return fetch('/login', {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'CSRF-Token': csrfToken
               },
               body: JSON.stringify({ idToken, email: user.email })
             });

@@ -2,6 +2,7 @@
 <%- include('partials/sidebar'); -%>
 
   <form action="/signup" style="border: 2px solid #0e0d10; padding: 50px; border-radius: 6px; box-shadow: #0e0d10 2px 2px 1px 2px;">
+    <input type="hidden" id="csrfToken" name="_csrf" value="<%= csrfToken %>">
     <h2 class="none" style="border: 2px #0e0d10; background: #cad3db; padding: 25px; font-weight: 300; box-shadow: #0e0d10 1px 1px 1px 2px; border-radius: 2px;">Sign up</h2>
     <label for="author">Name</label>
     <input type="text" class="form-control" name="author" required />
@@ -36,6 +37,7 @@
     const form = document.querySelector('form');
     const emailError = document.querySelector('.email.error');
     const passError = document.querySelector('.password.error');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -53,7 +55,7 @@
         const res = await fetch('/signup', {
           method: 'POST',
           body: JSON.stringify({ email, password, author }),
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json', 'CSRF-Token': csrfToken }
         });
         const data = await res.json();
         console.log(data);
