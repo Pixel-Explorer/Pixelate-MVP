@@ -1,13 +1,17 @@
 const exifParser = require('exif-parser');
 const admin = require('firebase-admin');
-const credentials = require('../sdk-firebase.json');
+const firebaseConfig = {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+};
 const { google } = require('googleapis');
 const hastags = require('../hastags.json');
 const moment = require('moment');
 const sharp = require('sharp');
 const fs = require('fs');
 admin.initializeApp({
-    credential: admin.credential.cert(credentials),
+    credential: admin.credential.cert(firebaseConfig),
     databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
 });
 const storage = admin.storage();
@@ -16,7 +20,10 @@ const bucketName = 'pixelate-app-e5126.appspot.com';
 const bucket = storage.bucket(bucketName);
 const sheets = google.sheets('v4');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
-const sheetCred = require('../haus-of-pixels-e9f3b6d268f5.json');
+const sheetCred = {
+    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+    private_key: process.env.GOOGLE_PRIVATE_KEY && process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+};
 const client = new google.auth.JWT(
     sheetCred.client_email,
     null,

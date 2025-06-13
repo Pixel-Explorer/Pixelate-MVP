@@ -5,11 +5,14 @@ This project is a Node.js application for managing blog posts and photo uploads 
 ## Prerequisites
 
 - **Node.js**: version 20 or higher is required. You can check your version with `node --version`.
-- **Firebase configuration**: the server expects Firebase service account credentials in the root directory:
-  - `sdk-firebase.json` – your Firebase Admin SDK service account.
-  - `haus-of-pixels-e9f3b6d268f5.json` – credentials used for Google Sheets access.
+- **Firebase configuration**: supply service account details through environment variables:
+  - `FIREBASE_PROJECT_ID`
+  - `FIREBASE_CLIENT_EMAIL`
+  - `FIREBASE_PRIVATE_KEY` (escape newlines with `\n`)
+  - `GOOGLE_CLIENT_EMAIL`
+  - `GOOGLE_PRIVATE_KEY` (escape newlines with `\n`)
 
-Ensure these files contain your own credentials before starting the application.
+Ensure these variables are set with your own credentials before starting the application.
 
 ## Installation
 
