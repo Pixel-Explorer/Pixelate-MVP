@@ -89,3 +89,13 @@ Deploy the hosting configuration with:
 firebase deploy --only hosting
 ```
 
+## Running Tests
+
+After installing dependencies, run:
+
+```bash
+npm test
+```
+
+This project uses Jest for testing, and `NODE_ENV` defaults to `test` when the suite runs.
+
