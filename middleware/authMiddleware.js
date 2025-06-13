@@ -1,5 +1,11 @@
 const admin = require('firebase-admin');
 
+// list of admin emails supplied via environment variable
+const adminEmails = (process.env.ADMIN_EMAILS || '')
+    .split(',')
+    .map((e) => e.trim())
+    .filter(Boolean);
+
 const requireAuth = (req, res, next) => {
     const sessionCookie = req.cookies.session || '';
 
@@ -47,7 +53,7 @@ const checkUser = async (req, res, next) => {
     try {
         const decodedClaims = await admin.auth().verifySessionCookie(token, true);
         res.locals.user = decodedClaims;
-        if(res.locals.user.email === "1991anirudh@gmail.com"){
+        if (adminEmails.includes(res.locals.user.email)) {
             res.locals.isAdmin = true;
         }
         next();

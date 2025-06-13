@@ -18,7 +18,8 @@ Ensure these files contain your own credentials before starting the application.
    npm install
    ```
 2. (Optional) set the `PORT` environment variable to control the server port. If not set, the app defaults to port `8080`.
-3. Start the server:
+3. (Optional) set `ADMIN_EMAILS` to a comma-separated list of addresses that should have admin access.
+4. Start the server:
    ```bash
    node index.js
    ```
