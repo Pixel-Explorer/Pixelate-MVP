@@ -177,15 +177,6 @@ async function accessSpreadsheet() {
         console.error('Error:', error);
     }
 }
-// accessSpreadsheet()
-async function fetchHashtagValues() {
-    const hashtagValues = {};
-    const querySnapshot = await getDocs(collection(db, "hashtagValues"));
-    querySnapshot.forEach((doc) => {
-        snapshotshashtagValues[doc.id] = doc.data();
-    });
-    return hashtagValues;
-}
 function calculateTotalSellingPrice(photoEV, hashtagsData) {
     return Promise.all(
         hashtagsData.map((hashtag) => {
