@@ -16,6 +16,7 @@ const router = Router();
 router.get('/dashboard', requireAuth, blogController.get_dashboard);
 router.post('/upload', upload.single('photo'), blogController.post_upload);
 router.post('/upload-multiple', upload.array('images', 1000), blogController.post_uploadMultiple);
+// optional query params: ?cursor=<key>&prev=<key>
 router.get('/profile', requireAuth, blogController.get_profile);
 // The personal gallery page is accessible to any authenticated user, including admins.
 router.get('/personal-gallery', requireAuth, blogController.get_postData);
@@ -23,6 +24,7 @@ router.get('/personal-gallery', requireAuth, blogController.get_postData);
 //Admin Routes
 
 router.get('/admin/dashboard', requireAdmin, blogController.get_adminDashboard);
+// optional query params: ?cursor=<key>&prev=<key>
 router.get('/admin/dashboard/photos',requireAdmin, blogController.get_adminPhotos);
 router.get('/admin/dashboard/hashtags',requireAdmin, blogController.get_adminHashtags);
 
