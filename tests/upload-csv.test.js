@@ -8,7 +8,8 @@ jest.mock('../middleware/authMiddleware', () => ({
 
 jest.mock('../controllers/blogController', () => ({
   post_upload: (req, res) => res.redirect('/dashboard'),
-  post_uploadMultiple: (req, res) => res.redirect('/dashboard'),
+  get_profile: (req, res) => res.sendStatus(200),
+  get_postData: (req, res) => res.sendStatus(200),
   fetchPhotos: jest.fn(() => Promise.resolve([
     {
       id: '1',
@@ -38,18 +39,24 @@ const path = require('path');
 
 describe('Upload handlers', () => {
   it('POST /upload should redirect after single upload', async () => {
+    const token = 'testtoken';
     const res = await request(app)
       .post('/upload')
+      .set('Cookie', `_csrf=${token}`)
+      .set('CSRF-Token', token)
       .field('hashtags', JSON.stringify(['#tag1']))
-      .attach('photo', Buffer.from('dummy'), 'test.jpg');
+      .attach('images', Buffer.from('dummy'), 'test.jpg');
     expect(res.statusCode).toBe(302);
     expect(res.headers['location']).toBe('/dashboard');
   });
 
-  it('POST /upload-multiple should redirect after multiple upload', async () => {
+  it('POST /upload with multiple files should redirect', async () => {
+    const token = 'testtoken';
     const res = await request(app)
-      .post('/upload-multiple')
-      .field('hashtagsMultiple', JSON.stringify(['#tag1', '#tag2']))
+      .post('/upload')
+      .set('Cookie', `_csrf=${token}`)
+      .set('CSRF-Token', token)
+      .field('hashtags', JSON.stringify(['#tag1', '#tag2']))
       .attach('images', Buffer.from('a'), 'a.jpg')
       .attach('images', Buffer.from('b'), 'b.jpg');
     expect(res.statusCode).toBe(302);
