@@ -12,6 +12,12 @@ This project is a Node.js application for managing blog posts and photo uploads 
   - `GOOGLE_CLIENT_EMAIL`
   - `GOOGLE_PRIVATE_KEY` (escape newlines with `\n`)
   - see `.env.example` for an example configuration
+  - `FIREBASE_API_KEY`
+  - `FIREBASE_AUTH_DOMAIN`
+  - `FIREBASE_STORAGE_BUCKET`
+  - `FIREBASE_MESSAGING_SENDER_ID`
+  - `FIREBASE_APP_ID`
+  - `FIREBASE_MEASUREMENT_ID`
 
 Ensure these variables are set with your own credentials before starting the application.
 

@@ -28,15 +28,7 @@
 
   <script>
 
-    var firebaseConfig = {
-      apiKey: "AIzaSyBgh9RutpTDCq12QYjpnFq5B7W2PAf4X14",
-      authDomain: "pixelate-app-e5126.firebaseapp.com",
-      projectId: "pixelate-app-e5126",
-      storageBucket: "pixelate-app-e5126.appspot.com",
-      messagingSenderId: "880725228002",
-      appId: "1:880725228002:web:6f916dddcf955c24daa1bb",
-      measurementId: "G-V4KRGLXZ1W"
-    };
+    var firebaseConfig = <%- JSON.stringify(firebaseConfig) %>;
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
