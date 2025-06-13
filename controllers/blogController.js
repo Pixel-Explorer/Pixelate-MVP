@@ -39,7 +39,7 @@ if (!firebaseOptions) {
     };
 }
 const { google } = require('googleapis');
-const hastags = require('../hastags.json');
+const hashtags = require('../hashtags.json');
 const moment = require('moment');
 const sharp = require('sharp');
 if (!admin.apps.length) {
@@ -252,7 +252,7 @@ async function accessHashtagSheet() {
 module.exports.get_dashboard = (req, res) => {
     res.render('home', {
         pageTitle: "Dashboard",
-        hastags: hastags,
+        hashtags: hashtags,
         csrfToken: req.csrfToken()
     });
 }
@@ -471,7 +471,7 @@ module.exports.get_adminDashboard = async (req, res) => {
                 console.error('Error counting documents:', error);
             });
     }
-    //count hastags
+    //count hashtags
     const totalHashtags = [];
     for (let user of documentNames) {
         const ref = db.ref(`users/${user}`);

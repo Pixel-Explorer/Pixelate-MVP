@@ -6,6 +6,11 @@ jest.mock('../middleware/authMiddleware', () => ({
   requireAdmin: (req, res, next) => next(),
 }));
 
+jest.mock('csurf', () => () => (req, res, next) => {
+  req.csrfToken = () => 'test';
+  next();
+});
+
 jest.mock('../controllers/blogController', () => ({
   post_upload: (req, res) => res.redirect('/dashboard'),
   post_uploadMultiple: (req, res) => res.redirect('/dashboard'),
@@ -27,6 +32,8 @@ jest.mock('../controllers/blogController', () => ({
     { user: 'alice', imageCount: 3, hashtagsCount: 7, totalSp: 21 }
   ])),
   get_dashboard: (req, res) => res.sendStatus(200), // stub
+  get_profile: (req, res) => res.sendStatus(200), // stub
+  get_postData: (req, res) => res.sendStatus(200), // stub
   get_adminDashboard: (req, res) => res.sendStatus(200), // stub
   get_adminPhotos: (req, res) => res.sendStatus(200), // stub
   get_adminHashtags: (req, res) => res.sendStatus(200), // stub

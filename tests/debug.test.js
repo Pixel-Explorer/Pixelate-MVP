@@ -9,6 +9,11 @@ jest.mock('../middleware/authMiddleware', () => ({
   requireAdmin: (req, res, next) => next(),
 }));
 
+jest.mock('csurf', () => () => (req, res, next) => {
+  req.csrfToken = () => 'test';
+  next();
+});
+
 const request = require('supertest');
 const app = require('../index');
 
