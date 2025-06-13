@@ -5,7 +5,10 @@ This project is a Node.js application for managing blog posts and photo uploads 
 ## Prerequisites
 
 - **Node.js**: version 20 or higher is required. You can check your version with `node --version`.
-- **Firebase configuration**: supply service account details through environment variables:
+- **Firebase configuration**: the application looks for a service account JSON
+  file mounted at `/etc/secrets/firebase-service-account-key.json`. If present,
+  it will be used automatically. When running locally, you can instead supply
+  the credentials via environment variables:
   - `FIREBASE_PROJECT_ID`
   - `FIREBASE_CLIENT_EMAIL`
   - `FIREBASE_PRIVATE_KEY` (escape newlines with `\n`)
