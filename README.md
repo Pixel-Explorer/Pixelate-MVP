@@ -55,6 +55,11 @@ This repository contains a `render.yaml` file for deploying the app to
    credentials) in the Render dashboard.
 5. Click **Apply** to provision the service and start the deployment.
 
+When deployed on Render, responses will not automatically include the
+`Content-Security-Policy` header defined in `firebase.json`. The middleware added
+in `index.js` sets the same policy for every request so be sure to keep it
+enabled when running on Render.
+
 ## Firebase Realtime Database Rules
 
 The repository also includes a `database.rules.json` file for the Firebase
