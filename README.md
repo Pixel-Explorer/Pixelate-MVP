@@ -52,3 +52,8 @@ This repository contains a `render.yaml` file for deploying the app to
 4. Provide any required environment variables (for example `PORT` or Firebase
    credentials) in the Render dashboard.
 5. Click **Apply** to provision the service and start the deployment.
+## Debugging Mounted Secrets
+
+The application exposes a helper endpoint at `/_debug/secrets`. When this endpoint is requested it reads the first few files inside `/etc/secrets` and returns their names and a short preview as JSON. This provides a quick way to confirm that secret files were mounted correctly.
+
+Start the server and visit `http://localhost:8080/_debug/secrets` (adjust the host and port if needed). The response will list any detected secret files along with a preview of their contents.
