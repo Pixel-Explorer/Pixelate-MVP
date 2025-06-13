@@ -71,3 +71,14 @@ Deploy these rules using the Firebase CLI:
 ```bash
 firebase deploy --only database
 ```
+
+## Firebase Hosting
+
+The `firebase.json` file configures response headers for hosting. It sets a `Content-Security-Policy` header that allows fonts loaded from `data:` URLs and scripts served from `blob:` URIs.
+
+Deploy the hosting configuration with:
+
+```bash
+firebase deploy --only hosting
+```
+
