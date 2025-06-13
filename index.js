@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const debugRoutes = require('./controllers/debugController');
 const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 
@@ -22,6 +23,7 @@ app.set('view engine', 'ejs');
 app.all('*', checkUser);
 app.use(authRoutes);
 app.use(blogRoutes);
+app.use(debugRoutes);
 
 
 
