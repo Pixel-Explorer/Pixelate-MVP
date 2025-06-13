@@ -6,6 +6,11 @@ jest.mock('../middleware/authMiddleware', () => ({
   requireAdmin: (req, res, next) => next(),
 }));
 
+jest.mock('csurf', () => () => (req, res, next) => {
+  req.csrfToken = () => 'test';
+  next();
+});
+
 jest.mock('../controllers/blogController', () => ({
   get_dashboard: (req, res) => res.sendStatus(200),
   post_upload: (req, res) => res.sendStatus(200),
