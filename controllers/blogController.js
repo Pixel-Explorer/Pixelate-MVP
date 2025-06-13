@@ -1,6 +1,8 @@
 const exifParser = require('exif-parser');
 const admin = require('firebase-admin');
-const credentials = require('../sdk-firebase.json');
+// Load Firebase credentials from the FIREBASE_CREDENTIALS environment variable
+// The variable should contain the service account JSON string
+const credentials = JSON.parse(process.env.FIREBASE_CREDENTIALS || '{}');
 const { google } = require('googleapis');
 const hastags = require('../hastags.json');
 const moment = require('moment');
@@ -16,11 +18,13 @@ const bucketName = 'pixelate-app-e5126.appspot.com';
 const bucket = storage.bucket(bucketName);
 const sheets = google.sheets('v4');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
-const sheetCred = require('../haus-of-pixels-e9f3b6d268f5.json');
+// Load Google Sheets credentials from the GOOGLE_SHEETS_CREDENTIALS environment variable
+const sheetCred = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS || '{}');
 const client = new google.auth.JWT(
     sheetCred.client_email,
     null,
-    sheetCred.private_key,
+    // Replace escaped newline characters for the private key
+    sheetCred.private_key ? sheetCred.private_key.replace(/\\n/g, '\n') : undefined,
     ['https://www.googleapis.com/auth/spreadsheets']
 );
 function generateUniqueId(length) {
