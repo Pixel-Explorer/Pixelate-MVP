@@ -1,33 +1,38 @@
 const exifParser = require('exif-parser');
 const admin = require('firebase-admin');
+const path = require('path');
 
+const fs = require('fs');
 let serviceAccount;
+let firebaseOptions;
 try {
-    // Prefer credentials mounted by the hosting environment
-    serviceAccount = require('/etc/secrets/firebase-service-account-key.json');
+    const secretsPath = '/etc/secrets';
+    if (fs.existsSync(secretsPath)) {
+        const match = fs.readdirSync(secretsPath)
+            .find(f => f.endsWith('.json') && f.includes('firebase'));
+        if (match) {
+            const filePath = path.join(secretsPath, match);
+            const raw = fs.readFileSync(filePath, 'utf8');
+            const data = JSON.parse(raw);
+            serviceAccount = {
+                projectId: data.project_id,
+                clientEmail: data.client_email,
+                privateKey: data.private_key.replace(/\\n/g, '\n'),
+            };
+            firebaseOptions = {
+                credential: admin.credential.cert(serviceAccount),
+                databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
+            };
+            console.log(`Loaded SA: ${serviceAccount.projectId}`);
+        }
+    }
 } catch (err) {
-    // ignore error; will fall back to env vars
+    // ignore errors and fall back to application default
 }
 
-function buildConfig() {
-    if (serviceAccount) {
-        return {
-            credential: admin.credential.cert({
-                projectId: serviceAccount.project_id,
-                clientEmail: serviceAccount.client_email,
-                privateKey: serviceAccount.private_key,
-            }),
-            databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
-        };
-    }
-    const firebaseConfig = {
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY &&
-            process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    };
-    return {
-        credential: admin.credential.cert(firebaseConfig),
+if (!firebaseOptions) {
+    firebaseOptions = {
+        credential: admin.credential.applicationDefault(),
         databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
     };
 }
@@ -35,9 +40,8 @@ const { google } = require('googleapis');
 const hastags = require('../hastags.json');
 const moment = require('moment');
 const sharp = require('sharp');
-const fs = require('fs');
 if (!admin.apps.length) {
-    admin.initializeApp(buildConfig());
+    admin.initializeApp(firebaseOptions);
 }
 const storage = admin.storage();
 const db = admin.database();
