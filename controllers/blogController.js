@@ -266,59 +266,44 @@ module.exports.get_profile = async (req, res) => {
     });
 }
 module.exports.post_upload = async (req, res) => {
-    const file = req.file;
-    const hashtags = JSON.parse(req.body.hashtags);
-    if (!file) {
+    const files = req.files && req.files.length ? req.files : (req.file ? [req.file] : []);
+    const hashtags = JSON.parse(req.body.hashtags || '[]');
+    if (!files.length) {
         return res.status(400).send('No file uploaded.');
     }
     const user = res.locals.user;
     const email = user.email;
-    // Store the file in Firebase Storage
     const folderName = email.replaceAll('.', '--').replaceAll('@', '-');
-    const fileName = Date.now() + '-' + file.originalname.replaceAll('.', '-');
-    const fileRef = bucket.file(folderName + fileName);
-    const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
-    const hashtagsList = hashtags.map((item) => {
-        return item.replace('#', '').replaceAll(' ', '').replaceAll('\n', '');
-    })
-    sharp(file.buffer)
-        .resize({ width: 300 }) // Adjust the dimensions as needed
-        .toBuffer()
-        .then((resizedImageData) => {
-            const uploadStream = fileRef.createWriteStream({
-                metadata: {
-                    contentType: file.mimetype,
-                },
+    const hashtagsList = hashtags.map((item) => item.replace('#', '').replaceAll(' ', '').replaceAll('\n', ''));
+
+    for (const file of files) {
+        const fileName = Date.now() + '-' + file.originalname.replaceAll('.', '-');
+        const fileRef = bucket.file(folderName + fileName);
+        const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
+        try {
+            const resizedImageData = await sharp(file.buffer).resize({ width: 300 }).toBuffer();
+            await new Promise((resolve, reject) => {
+                const uploadStream = fileRef.createWriteStream({ metadata: { contentType: file.mimetype } });
+                uploadStream.on('error', reject);
+                uploadStream.on('finish', resolve);
+                uploadStream.end(resizedImageData);
             });
-            uploadStream.on('error', (err) => {
-                console.error('Error uploading file:', err);
-                res.status(500).send('Error uploading file.');
-            });
-            uploadStream.on('finish', () => {
-                // Now, store the EXIF data and image URL in the Firebase Realtime Database
-                const exifData = exifParser.create(file.buffer).parse();
-                const serializedExifData = JSON.stringify(exifData);
-                // Store the EXIF data and image URL in the database
-                const data = {
-                    name: fileName,
-                    exifData: serializedExifData,
-                    imageUrl: imageUrl,
-                    hashtags: hashtags,
-                    email: email
-                }
-                addDataToFirebase(data);
-                res.redirect('/dashboard');
-            });
-            uploadStream.end(resizedImageData);
-        })
-        .catch((error) => {
-            console.error('Error resizing image:', error);
-            res.status(500).send('Internal Server Error');
-        });
+            const exifData = exifParser.create(file.buffer).parse();
+            const serializedExifData = JSON.stringify(exifData);
+            const data = { name: fileName, exifData: serializedExifData, imageUrl: imageUrl, hashtags: hashtags, email: email };
+            addDataToFirebase(data);
+        } catch (err) {
+            console.error('Error uploading file:', err);
+            return res.status(500).send('Error uploading file');
+        }
+    }
+
     hashtagsList.forEach((hashtag) => {
-        updateHashtagCount(hashtag, 1);
+        updateHashtagCount(hashtag, files.length);
     });
- }
+
+    res.json({ success: true });
+};
 module.exports.post_uploadMultiple = async (req, res) => {
   const files = req.files;
   const hashtags = JSON.parse(req.body.hashtagsMultiple);

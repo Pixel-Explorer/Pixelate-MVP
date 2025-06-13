@@ -1,303 +1,110 @@
 <%- include('partials/header'); -%>
-  <head>
-    <!-- Include the necessary Firebase scripts -->
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-storage.js"></script>
-  </head>
-  <div class="container"
-    style="margin: auto; margin-bottom: 20px; border-radius: 20px; box-shadow:  3px 3px 0px 3px #0e0d10; align-content: center; -ms-grid-column-align: center;">
-    <div class="row" style="justify-content: center;">
-      <div class="col-md-6 mt-3">
-        <form id="upload-single" enctype="multipart/form-data"
-          style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 2px 2px 0px 2px;">
-          <h2 h2 class="d-flex align-items-center mb-3"
-            style="border: 1px solid #0e0d10; padding: 50px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 200;">
-            Single image <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#0e0d10"
-              class="bi bi-image" viewBox="0 0 16 16" style="margin-left: 30px;">
-              <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-              <path
-                d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12" />
-            </svg> </h2>
-          <label for="image">Add image</label>
-          <input type="file" class="form-control" id="image-input"
-            style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 1px 1px 0px 1.5px;" name="photo"
-            accept="image/jpeg, image/png, image/jpg" required />
-          <label for="hastags">Hastags</label>
-          <div class="hashtag-dropdown">
-            <div class="selected-hashtags">
-            </div>
-            <input type="text" class="form-control" id="hashtag-input"
-              style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 1px 1px 0px 1.5px; background-color: #f2f086; -webkit-text-fill-color: #0e0d10;"
-              placeholder="Type hashtags...">
-            <ul class="hashtag-list">
-              <% for (let hastag of hastags) { %>
-                <li>#<%=hastag%>
-                </li>
-                <% } %>
-                  <!-- Add more hashtags as needed -->
-            </ul>
-          </div>
-          <div class="hastag error"></div>
-          <button type="submit" class="mt-3 color=#458CCB" id="submit-button"
-            style="border: 1px solid #0e0d10; padding: 10px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 500; margin-bottom: 20px;">
-            Upload <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-              class="bi bi-cloud-arrow-up" viewBox="0 0 16 16" style="margin-left: 10px;">
-              <path fill-rule="evenodd"
-                d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z" />
-              <path
-                d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
-            </svg>
-           </button>
+<head>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-storage.js"></script>
+</head>
+<div class="container" style="margin: auto; margin-bottom: 20px; border-radius: 20px; box-shadow:3px 3px 0px 3px #0e0d10; align-content: center;">
+  <form id="upload-form" enctype="multipart/form-data" style="border:#0e0d10 1px solid; border-radius:5px; box-shadow:#0e0d10 2px 2px 0px 2px; padding:20px;">
+    <h2 class="d-flex align-items-center mb-3" style="border:1px solid #0e0d10; padding:20px; border-radius:5px; background-color:#A3C6E5; box-shadow:#0e0d10 1px 2px 0px 2px; -webkit-text-fill-color:#0e0d10; font-weight:200;">Upload Images</h2>
+    <div id="drop-zone" class="drop-zone">Drag & drop images here or click to select</div>
+    <input type="file" id="image-input" name="images" multiple accept="image/jpeg, image/png, image/jpg" style="display:none;">
+    <label for="hastags">Hashtags</label>
+    <div class="hashtag-dropdown">
+      <div class="selected-hashtags"></div>
+      <input type="text" class="form-control" id="hashtag-input" style="border:#0e0d10 1px solid; border-radius:5px; box-shadow:#0e0d10 1px 1px 0px 1.5px; background-color:#f2f086; -webkit-text-fill-color:#0e0d10;" placeholder="Type hashtags...">
+      <ul class="hashtag-list">
+        <% for (let hastag of hastags) { %>
+          <li>#<%=hastag%></li>
+        <% } %>
+      </ul>
+    </div>
+    <div class="hastag error"></div>
+    <div id="preview-container"></div>
+    <button type="submit" class="mt-3" id="upload-button" style="border:1px solid #0e0d10; padding:10px; border-radius:5px; background-color:#A3C6E5; box-shadow:#0e0d10 1px 2px 0px 2px; -webkit-text-fill-color:#0e0d10; font-weight:500; margin-bottom:20px;">Upload</button>
+  </form>
+</div>
+<footer>&#169; House of Pixels OPC Pvt Ltd &#169;</footer>
+<script>
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('image-input');
+  const previewContainer = document.getElementById('preview-container');
+  const selectedHashtags = document.querySelector('.selected-hashtags');
+  const hashtagInput = document.getElementById('hashtag-input');
+  const hashtagList = document.querySelector('.hashtag-list');
+  const selectedHashtagsList = [];
+  hashtagList.style.display = 'none';
 
-         </form>
-       </div>
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('hover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
+  dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('hover'); handleFiles(e.dataTransfer.files); });
+  fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-       <div class="col-md-6 mt-3 ">
-
-  
-        <form id="upload-multiple" enctype="multipart/form-data"
-          style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 2px 2px 0px 2px;">
-          <h2 h2 class="d-flex align-items-center mb-3"
-            style="border: 1px solid #0e0d10; padding: 50px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 200;">
-            Multiple Images <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#0e0d10"
-              class="bi bi-images" viewBox="0 0 16 16" style="margin-left: 10px;">
-              <path d="M4.502 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3" />
-              <path
-                d="M14.002 13a2 2 0 0 1-2 2h-10a2 2 0 0 1-2-2V5A2 2 0 0 1 2 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-1.998 2M14 2H4a1 1 0 0 0-1 1h9.002a2 2 0 0 1 2 2v7A1 1 0 0 0 15 11V3a1 1 0 0 0-1-1M2.002 4a1 1 0 0 0-1 1v8l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094l1.777 1.947V5a1 1 0 0 0-1-1h-10" />
-            </svg> </h2>
-          <label for="image">Add images</label>
-          <input type="file" name="images" class="form-control" id="image-input-multiple"
-            style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 1px 1px 0px 1.5px;"
-            accept="image/jpeg, image/png" required multiple />
-          <label for="hastags">Hastags</label>
-          <div class="hashtag-dropdown-multiple">
-            <div class="selected-hashtags-multiple">
-            </div>
-            <input type="text" class="form-control" id="hashtag-input-multiple"
-              style="border: #0e0d10 1px solid; border-radius: 5px; box-shadow: #0e0d10 1px 1px 0px 1.5px; background-color: #f2f086; -webkit-text-fill-color: #0e0d10;"
-              placeholder="Type hashtags...">
-            <ul class="hashtag-list-multiple">
-              <% for (let hastag of hastags) { %>
-                <li>#<%=hastag%>
-                </li>
-                <% } %>
-                  <!-- Add more hashtags as needed -->
-            </ul>
-          </div>
-          <div class="hastag error"></div>
-          <button id="uploadButton" type="submit" class="mt-3 color=#458CCB"
-            style="border: 1px solid #0e0d10; padding: 10px; border-radius: 5px; background-color: #A3C6E5; box-shadow: #0e0d10 1px 2px 0px 2px; -webkit-text-fill-color: #0e0d10; font-weight: 500; margin-bottom: 20px; ">
-            Upload <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-              class="bi bi-cloud-arrow-up" viewBox="0 0 16 16" style="margin-left: 10px;">
-              <path fill-rule="evenodd"
-                d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z" />
-              <path
-                d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
-            </svg>
-          </button>
-
-         </form>
-
-       </div>
-     </div>
-   </div>
-
-  
-  <footer>&#169; House of Pixels OPC Pvt Ltd &#169;</footer>
-  <script>
-    function disableSubmitButton(form) {
-      form.querySelector('button[type="submit"]').disabled = true;
+  function handleFiles(files) {
+    for (const file of files) {
+      const item = document.createElement('div');
+      item.className = 'preview-item';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      const progress = document.createElement('progress');
+      progress.value = 0; progress.max = 100; progress.className = 'progress';
+      item.appendChild(img); item.appendChild(progress);
+      previewContainer.appendChild(item);
+      file.previewProgress = progress;
+      pendingFiles.push(file);
     }
-    const hashtagInput = document.getElementById('hashtag-input');
-    const hashtagList = document.querySelector('.hashtag-list');
-    hashtagList.style.display = 'none';
-    const selectedHashtags = document.querySelector('.selected-hashtags');
-    const selectedHashtagsList = [];
-    const hashtagInputMultiple = document.getElementById('hashtag-input-multiple');
-    const hashtagListMultiple = document.querySelector('.hashtag-list-multiple');
-    hashtagListMultiple.style.display = 'none';
-    const selectedHashtagsMultiple = document.querySelector('.selected-hashtags-multiple');
-    const selectedHashtagsMultipleList = [];
-    hashtagInput.addEventListener('input', () => {
-      const inputText = hashtagInput.value.toLowerCase();
-      const hashtags = Array.from(hashtagList.querySelectorAll('li'));
-      if (inputText) {
-        hashtagList.style.display = 'block';
-      } else {
-        hashtagList.style.display = 'none';
+  }
+
+  hashtagInput.addEventListener('input', () => {
+    const inputText = hashtagInput.value.toLowerCase();
+    const hashtags = Array.from(hashtagList.querySelectorAll('li'));
+    hashtagList.style.display = inputText ? 'block' : 'none';
+    hashtags.forEach((hashtag) => { const text = hashtag.textContent.toLowerCase(); hashtag.style.display = text.includes(inputText) ? 'block' : 'none'; });
+  });
+  hashtagList.addEventListener('click', (event) => {
+    if (event.target.tagName === 'LI') {
+      const text = event.target.textContent;
+      if (!selectedHashtagsList.includes(text)) {
+        const btn = document.createElement('button');
+        btn.textContent = text; btn.className = 'selected-hashtag';
+        selectedHashtags.appendChild(btn); selectedHashtagsList.push(text);
       }
-      hashtags.forEach((hashtag) => {
-        const text = hashtag.textContent.toLowerCase();
-        if (text.includes(inputText)) {
-          hashtag.style.display = 'block';
-        } else {
-          hashtag.style.display = 'none';
-        }
-      });
-    });
-    hashtagInputMultiple.addEventListener('input', () => {
-      const inputText = hashtagInputMultiple.value.toLowerCase();
-      const hashtags = Array.from(hashtagListMultiple.querySelectorAll('li'));
-      if (inputText) {
-        hashtagListMultiple.style.display = 'block';
-      } else {
-        hashtagListMultiple.style.display = 'none';
-      }
-      hashtags.forEach((hashtag) => {
-        const text = hashtag.textContent.toLowerCase();
-        if (text.includes(inputText)) {
-          hashtag.style.display = 'block';
-        } else {
-          hashtag.style.display = 'none';
-        }
-      });
-    });
-    hashtagList.addEventListener('click', (event) => {
-      if (event.target.tagName === 'LI') {
-        const selectedHashtag = document.createElement('div');
-        selectedHashtag.textContent = event.target.textContent;
-        selectedHashtag.className = 'selected-hashtag';
-        selectedHashtags.appendChild(selectedHashtag);
-        selectedHashtagsList.push(event.target.textContent);
-        console.log(selectedHashtagsList);
-        hashtagInput.value = '';
-        hashtagList.style.display = 'none';
-      }
-    });
-    hashtagListMultiple.addEventListener('click', (event) => {
-      if (event.target.tagName === 'LI') {
-        const selectedHashtag = document.createElement('div');
-        selectedHashtag.textContent = event.target.textContent;
-        selectedHashtag.className = 'selected-hashtag';
-        selectedHashtagsMultiple.appendChild(selectedHashtag);
-        selectedHashtagsMultipleList.push(event.target.textContent);
-        console.log(selectedHashtagsMultipleList);
-        hashtagInputMultiple.value = '';
-        hashtagListMultiple.style.display = 'none';
-      }
-    });
-    selectedHashtags.addEventListener('click', (event) => {
-      if (event.target.tagName === 'DIV') {
-        var index = selectedHashtagsList.indexOf(event.target.textContent);
-        if (index > -1) {
-          selectedHashtagsList.splice(index, 1);
-        }
-        console.log(selectedHashtagsList);
-        event.target.remove();
-      }
-    });
-    selectedHashtagsMultiple.addEventListener('click', (event) => {
-      if (event.target.tagName === 'DIV') {
-        var index = selectedHashtagsMultipleList.indexOf(event.target.textContent);
-        if (index > -1) {
-          selectedHashtagsMultipleList.splice(index, 1);
-        }
-        console.log(selectedHashtagsMultipleList);
-        event.target.remove();
-      }
-    });
-    const UploadFormSingle = document.getElementById('upload-single');
-    UploadFormSingle.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const imageInput = document.getElementById('image-input');
-      const image = imageInput.files[0];
-      // console.log(image);
+      hashtagInput.value = ''; hashtagList.style.display = 'none';
+    }
+  });
+  selectedHashtags.addEventListener('click', (event) => {
+    if (event.target.tagName === 'BUTTON') {
+      const text = event.target.textContent;
+      const idx = selectedHashtagsList.indexOf(text);
+      if (idx > -1) selectedHashtagsList.splice(idx, 1);
+      event.target.remove();
+    }
+  });
+
+  const pendingFiles = [];
+  async function uploadFile(file) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
       const formData = new FormData();
-      formData.append('photo', image);
+      formData.append('images', file);
       formData.append('hashtags', JSON.stringify(selectedHashtagsList));
-      console.log(formData);
-      try {
-        const res = await fetch('/upload', {
-          method: 'POST',
-          body: formData,
-        });
-      }
-       catch (err) {
-         console.log(err);
-       }
-     });
-     const uploadFormMultiple = document.getElementById('upload-multiple');
-
-  
-    uploadFormMultiple.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const imageInput = document.getElementById('image-input-multiple');
-      const images = imageInput.files;
-      const formData = new FormData();
-      for (let i = 0; i < images.length; i++) {
-        formData.append('images', images[i]);
-      }
-      formData.append('hashtagsMultiple', JSON.stringify(selectedHashtagsMultipleList));
-      // console.log(formData);
-      try {
-        const res = await fetch('/upload-multiple', {
-          method: 'POST',
-          body: formData,
-        });
-      }
-       catch (err) {
-         console.log(err);
-       }
-     });
-     function createHashtagButton(hashtagText, container) {
-
-  
-      const button = document.createElement('button');
-      button.textContent = hashtagText;
-      button.className = 'selected-hashtag';
-      container.appendChild(button);
-    }
-    // Update the click event listeners to create hashtag buttons
-    hashtagList.addEventListener('click', (event) => {
-      if (event.target.tagName === 'LI') {
-        const selectedHashtagText = event.target.textContent;
-        if (!selectedHashtagsList.includes(selectedHashtagText)) {
-          createHashtagButton(selectedHashtagText, selectedHashtags);
-          selectedHashtagsList.push(selectedHashtagText);
-          console.log(selectedHashtagsList);
-        }
-        hashtagInput.value = '';
-        hashtagList.style.display = 'none';
-      }
-    });
-    hashtagListMultiple.addEventListener('click', (event) => {
-      if (event.target.tagName === 'LI') {
-        const selectedHashtagText = event.target.textContent;
-        if (!selectedHashtagsMultipleList.includes(selectedHashtagText)) {
-          createHashtagButton(selectedHashtagText, selectedHashtagsMultiple);
-          selectedHashtagsMultipleList.push(selectedHashtagText);
-          console.log(selectedHashtagsMultipleList);
-        }
-        hashtagInputMultiple.value = '';
-        hashtagListMultiple.style.display = 'none';
-      }
-    });
-    // Add a function to remove hashtags visually
-    function removeHashtagButton(selectedHashtagText, container, list) {
-      const index = list.indexOf(selectedHashtagText);
-      if (index > -1) {
-        list.splice(index, 1);
-      }
-      const buttons = container.querySelectorAll('.selected-hashtag');
-      buttons.forEach((button) => {
-        if (button.textContent === selectedHashtagText) {
-          button.remove();
-        }
+      xhr.open('POST', '/upload');
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) file.previewProgress.value = (e.loaded / e.total) * 100;
       });
-      console.log(list);
+      xhr.onload = () => { file.previewProgress.value = 100; resolve(); };
+      xhr.onerror = reject;
+      xhr.send(formData);
+    });
+  }
+
+  document.getElementById('upload-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    for (const file of pendingFiles) {
+      await uploadFile(file).catch(console.error);
     }
-    selectedHashtags.addEventListener('click', (event) => {
-      if (event.target.tagName === 'BUTTON') {
-        const selectedHashtagText = event.target.textContent;
-        removeHashtagButton(selectedHashtagText, selectedHashtags, selectedHashtagsList);
-      }
-    });
-    selectedHashtagsMultiple.addEventListener('click', (event) => {
-      if (event.target.tagName === 'BUTTON') {
-        const selectedHashtagText = event.target.textContent;
-        removeHashtagButton(selectedHashtagText, selectedHashtagsMultiple, selectedHashtagsMultipleList);
-      }
-    });
-  </script>
-  </body>
-  </html>
+    pendingFiles.length = 0;
+  });
+</script>
+</body>
+</html>
