@@ -77,4 +77,23 @@
         <% } %>
     </div>
 
+    <button id="downloadButton" class="btn btn-primary mt-3">Download CSV</button>
+
+    <script>
+        const downloadButton = document.getElementById('downloadButton');
+        downloadButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/export/photos.csv');
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'photos.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+
     <%- include('../partials/footer'); -%>

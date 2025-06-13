@@ -610,3 +610,94 @@ async function updateHashtagCount(hashtag, count) {
             })
         })
 }
+
+// --------- Data export helpers ---------
+async function fetchPhotos() {
+    const ref = db.ref('photos');
+    const data = [];
+    await ref.once('value')
+        .then((snapshot) => {
+            snapshot.forEach((child) => data.push(child.val()));
+        })
+        .catch((error) => console.error('Error fetching photos:', error));
+    return data;
+}
+
+async function fetchHashtags() {
+    const ref = db.ref('hashtags');
+    const data = [];
+    await ref.once('value')
+        .then((snapshot) => {
+            snapshot.forEach((child) => data.push(child.val()));
+        })
+        .catch((error) => console.error('Error fetching hashtags:', error));
+    return data;
+}
+
+async function fetchUsersSummary() {
+    const usersRef = db.ref('users');
+    let documentNames = [];
+    await usersRef.once('value')
+        .then((snapshot) => {
+            if (snapshot.exists()) {
+                documentNames = Object.keys(snapshot.val());
+            }
+        })
+        .catch((error) => console.error('Error retrieving document names:', error));
+
+    const users = documentNames.map((u) => u.replaceAll('--', '.').replace('-', '@'));
+
+    const totalImages = [];
+    for (let user of documentNames) {
+        const ref = db.ref(`users/${user}`);
+        await ref.once('value')
+            .then((snap) => totalImages.push(snap.numChildren()))
+            .catch((error) => console.error('Error counting documents:', error));
+    }
+
+    const totalHashtags = [];
+    for (let user of documentNames) {
+        const ref = db.ref(`users/${user}`);
+        let count = 0;
+        await ref.once('value', (snap) => {
+            snap.forEach((child) => {
+                const doc = child.val();
+                const hashtags = doc.hashtags || [];
+                count += hashtags.length;
+            });
+        });
+        totalHashtags.push(count);
+    }
+
+    const totalUserSP = [];
+    for (let user of documentNames) {
+        const ref = db.ref(`users/${user}`);
+        const sp = await ref.once('value')
+            .then((snap) => {
+                let t = 0;
+                snap.forEach((child) => {
+                    const userData = child.val();
+                    if (userData && userData.sp) {
+                        t += userData.sp;
+                    }
+                });
+                return t;
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                return 0;
+            });
+        totalUserSP.push(sp);
+    }
+
+    return users.map((user, idx) => ({
+        user,
+        imageCount: totalImages[idx],
+        hashtagsCount: totalHashtags[idx],
+        totalSp: totalUserSP[idx]
+    }));
+}
+
+module.exports.fetchPhotos = fetchPhotos;
+module.exports.fetchHashtags = fetchHashtags;
+module.exports.fetchUsersSummary = fetchUsersSummary;

@@ -41,32 +41,18 @@
 
     <script>
         const downloadButton = document.getElementById('downloadButton');
-        downloadButton.addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent the default button behavior
-
-            // Get the table rows
-            const tableRows = document.querySelectorAll('tbody tr');
-
-            // Generate the CSV data
-            const data = [["Hashtag Title", "Number of Photos", "Total Worth Locked", "Average Photo Worth"]];
-            tableRows.forEach((row) => {
-                const title = row.querySelector('td:nth-child(1) div').textContent.trim();
-                const count = row.querySelector('td:nth-child(2)').textContent.trim();
-                const utilityTokensLocked = row.querySelector('td:nth-child(3)').textContent.trim();
-                const tokensPerCount = parseFloat(utilityTokensLocked) / parseFloat(count);
-                data.push([title, count, utilityTokensLocked, tokensPerCount]);
-            });
-
-            const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(data.map(row => row.join(",")).join("\n"));
-
-            // Create a temporary anchor element and download the CSV file
-            const link = document.createElement("a");
-            link.setAttribute("href", csvContent);
-            link.setAttribute("download", "data.csv");
-            link.style.display = "none";
+        downloadButton.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const response = await fetch('/export/hashtags.csv');
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'hashtags.csv';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         });
 
         const searchButton = document.getElementById('searchButton');
