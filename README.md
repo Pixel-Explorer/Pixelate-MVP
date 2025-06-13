@@ -15,6 +15,8 @@ This project is a Node.js application for managing blog posts and photo uploads 
   - `GOOGLE_CLIENT_EMAIL`
   - `GOOGLE_PRIVATE_KEY` (escape newlines with `\n`)
   - see `.env.example` for an example configuration
+  - `FIREBASE_DB_URL` (Realtime Database URL)
+  - `FIREBASE_BUCKET` (Storage bucket name)
   - `FIREBASE_API_KEY`
   - `FIREBASE_AUTH_DOMAIN`
   - `FIREBASE_STORAGE_BUCKET`

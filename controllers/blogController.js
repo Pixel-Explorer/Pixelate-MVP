@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 let serviceAccount;
 let firebaseOptions;
+const defaultDbUrl = 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/';
+const databaseURL = process.env.FIREBASE_DB_URL || defaultDbUrl;
 try {
     const secretsPath = '/etc/secrets';
     if (fs.existsSync(secretsPath)) {
@@ -21,7 +23,7 @@ try {
             };
             firebaseOptions = {
                 credential: admin.credential.cert(serviceAccount),
-                databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
+                databaseURL,
             };
             console.log(`Loaded SA: ${serviceAccount.projectId}`);
         }
@@ -33,7 +35,7 @@ try {
 if (!firebaseOptions) {
     firebaseOptions = {
         credential: admin.credential.applicationDefault(),
-        databaseURL: 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/',
+        databaseURL,
     };
 }
 const { google } = require('googleapis');
@@ -45,7 +47,7 @@ if (!admin.apps.length) {
 }
 const storage = admin.storage();
 const db = admin.database();
-const bucketName = 'pixelate-app-e5126.appspot.com';
+const bucketName = process.env.FIREBASE_BUCKET || 'pixelate-app-e5126.appspot.com';
 const bucket = storage.bucket(bucketName);
 const sheets = google.sheets('v4');
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
