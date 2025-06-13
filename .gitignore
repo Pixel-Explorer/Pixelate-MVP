@@ -2,3 +2,4 @@ node_modules/
 # Credential files
 sdk-firebase.json
 haus-of-pixels*.json
+data.json
