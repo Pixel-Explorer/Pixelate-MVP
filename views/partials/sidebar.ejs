@@ -1,0 +1,20 @@
+<div id="sidebar" class="sidebar">
+  <button id="sidebar-toggle" class="sidebar-toggle">&#9776;</button>
+  <ul class="sidebar-links">
+    <li><a href="/dashboard">Dashboard</a></li>
+    <li><a href="/profile">Profile</a></li>
+    <li><a href="/login">Login</a></li>
+    <li><a href="/signup">Signup</a></li>
+  </ul>
+  <form id="sidebar-upload" action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="photo" required>
+    <button type="submit">Upload</button>
+  </form>
+</div>
+<script>
+  const sidebarToggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('collapsed');
+  });
+</script>
