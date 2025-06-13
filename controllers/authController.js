@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const firebaseClientConfig = require('../config/firebaseClient');
 
 const handleErrors = (err) => {
     console.log(err.message, err.code);
@@ -31,13 +32,15 @@ const handleErrors = (err) => {
 
 module.exports.signup_get = (req, res) => {
     res.render('signup', {
-        pageTitle: "Sign Up"
+        pageTitle: "Sign Up",
+        firebaseConfig: firebaseClientConfig
     });
 }
 
 module.exports.login_get = (req, res) => {
     res.render('login', {
-        pageTitle: "Login"
+        pageTitle: "Login",
+        firebaseConfig: firebaseClientConfig
     });
 }
 
