@@ -245,24 +245,47 @@ module.exports.get_profile = async (req, res) => {
     const user = res.locals.user;
     const email = user.email;
     const folderName = email.replaceAll('.', '--').replace('@', '-');
-    const dataArray = [];
     const usersRef = db.ref(`users/${folderName}`);
-    await usersRef.once('value')
-        .then((snapshot) => {
-            dataArray.length = 0;
-            snapshot.forEach((childSnapshot) => {
-                const data = childSnapshot.val();
-                dataArray.push(data);
-            });
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
-    // console.log(dataArray);
+    const cursor = req.query.cursor;
+    const prev = req.query.prev;
+    let query = usersRef.orderByKey();
+    if (prev) {
+        query = query.endBefore(prev).limitToLast(101);
+    } else if (cursor) {
+        query = query.startAfter(cursor).limitToFirst(101);
+    } else {
+        query = query.limitToFirst(101);
+    }
+    const snapshot = await query.once('value');
+    const dataArray = [];
+    snapshot.forEach((childSnapshot) => {
+        const data = childSnapshot.val();
+        dataArray.push({ key: childSnapshot.key, ...data });
+    });
+    let nextCursor = null;
+    let prevCursor = null;
+    if (prev) {
+        if (dataArray.length > 100) {
+            nextCursor = prev;
+            prevCursor = dataArray[0].key;
+            dataArray.shift();
+        } else {
+            nextCursor = prev;
+        }
+    } else {
+        if (dataArray.length > 100) {
+            nextCursor = dataArray[dataArray.length - 1].key;
+            dataArray.pop();
+        }
+        prevCursor = cursor;
+    }
     res.render('profile', {
         pageTitle: 'Profile',
         datas: dataArray,
-        count: dataArray.length
+        count: dataArray.length,
+        nextCursor,
+        prevCursor,
+        firstKey: dataArray.length ? dataArray[0].key : null
     });
 }
 module.exports.post_upload = async (req, res) => {
@@ -488,24 +511,46 @@ module.exports.get_adminDashboard = async (req, res) => {
 }
 module.exports.get_adminPhotos = async (req, res) => {
     const usersRef = db.ref('photos');
+    const cursor = req.query.cursor;
+    const prev = req.query.prev;
+    let query = usersRef.orderByKey();
+    if (prev) {
+        query = query.endBefore(prev).limitToLast(101);
+    } else if (cursor) {
+        query = query.startAfter(cursor).limitToFirst(101);
+    } else {
+        query = query.limitToFirst(101);
+    }
+    const snapshot = await query.once('value');
     const data = [];
-    await usersRef.once('value')
-        .then((snapshot) => {
-            var val;
-            snapshot.forEach((childSnapshot) => {
-                val = childSnapshot.val();
-                data.push(val);
-            });
-            // return val;
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
-    // console.log(data);
+    snapshot.forEach((childSnapshot) => {
+        data.push({ key: childSnapshot.key, ...childSnapshot.val() });
+    });
+    let nextCursor = null;
+    let prevCursor = null;
+    if (prev) {
+        if (data.length > 100) {
+            nextCursor = prev;
+            prevCursor = data[0].key;
+            data.shift();
+        } else {
+            nextCursor = prev;
+        }
+    } else {
+        if (data.length > 100) {
+            nextCursor = data[data.length - 1].key;
+            data.pop();
+        }
+        prevCursor = cursor;
+    }
+    data.reverse();
     res.render('admin/adminPhotos', {
         pageTitle: "Admin Dashboard",
-        datas: data.reverse(),
-        count: data.length
+        datas: data,
+        count: data.length,
+        nextCursor,
+        prevCursor,
+        firstKey: data.length ? data[0].key : null
     });
 }
 module.exports.get_adminHashtags = async (req, res) => {
