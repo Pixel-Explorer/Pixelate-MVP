@@ -6,7 +6,10 @@ const debugRoutes = require('./controllers/debugController');
 const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 // Content Security Policy to match firebase.json
-const CSP_VALUE = "default-src 'self'; font-src 'self' data:; script-src 'self' blob:";
+const CSP_VALUE = "default-src 'self'; " +
+  "font-src 'self' https://fonts.gstatic.com; " +
+  "style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+  "script-src 'self' https://cdn.jsdelivr.net;";
 
 const app = express();
 
