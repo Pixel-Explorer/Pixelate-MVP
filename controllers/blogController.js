@@ -1,6 +1,7 @@
 const exifParser = require('exif-parser');
 const admin = require('firebase-admin');
 const path = require('path');
+const logger = require('../logger');
 
 const fs = require('fs');
 let serviceAccount;
@@ -75,17 +76,17 @@ async function addDataToFirebase(data) {
     const folderName = data.email.replaceAll('.', '--').replaceAll('@', '-');
     const exifData = JSON.parse(data.exifData);
     try {
-        client.authorize(async function (err) {
-            if (err) {
-                console.error('Authentication failed:', err);
-                return;
-            }
-            const uniqueId = generateUniqueId(11);
-            const imageUrl = data.imageUrl[0];
-            const hashtags = data.hashtags;
-            const hashtagsList = hashtags.map((item) => {
-                return item.replace('#', '').replaceAll(' ', '').replaceAll('\n', '');
-            })
+        await new Promise((resolve, reject) => {
+            client.authorize(async (err) => {
+                if (err) {
+                    logger.error('Authentication failed:', err);
+                    return reject(err);
+                }
+                try {
+                    const uniqueId = generateUniqueId(11);
+                    const imageUrl = data.imageUrl[0];
+                    const hashtags = data.hashtags;
+                    const hashtagsList = hashtags.map((item) => item.replace('#', '').replaceAll(' ', '').replaceAll('\n', ''));
             let dateTime = 0;
             let width = 0;
             let height = 0;
@@ -138,14 +139,8 @@ async function addDataToFirebase(data) {
             if (exifData.tags.GPSLongitude) {
                 longitude = exifData.tags.GPSLongitude;
             }
-            const EV = Math.log((aperture * aperture) / (exposerTime * (iso / 100))) / Math.log(2);
-            const sp = await calculateTotalSellingPrice(EV, hashtagsList)
-                .then((totalSellingPrice) => {
-                    return totalSellingPrice;
-                })
-                .catch((error) => {
-                    console.error('Error calculating total selling price:', error);
-                });
+                    const EV = Math.log((aperture * aperture) / (exposerTime * (iso / 100))) / Math.log(2);
+                    const sp = await calculateTotalSellingPrice(EV, hashtagsList);
             // const dataArray = [uniqueId, imageUrl, imageUrl, dateTime, 't', width, height, aspectRatio, , data.email.replace('@gmail.com', ''), , , cameraMake, cameraModel, iso, aperture, focalLength, exposerTime, EV, photoLocation, latitude, longitude, photoCountry, photoCity, , , , , , , , , , EV,]
             // const finalArray = dataArray.concat(hashtagsList)
             // Define the data you want to append
@@ -170,9 +165,15 @@ async function addDataToFirebase(data) {
             };
             db.ref(`/users/${folderName}`).push(firebaseData);
             db.ref(`/photos`).push(newData);
+                    resolve();
+                } catch (innerErr) {
+                    reject(innerErr);
+                }
+            });
         });
     } catch (error) {
-        console.error('Error:', error);
+        logger.error('Error:', error);
+        throw error;
     }
 }
 async function accessSpreadsheet() {
@@ -196,7 +197,8 @@ async function accessSpreadsheet() {
         }))
         db.ref(`/hashtags`).set(data);
     } catch (error) {
-        console.error('Error:', error);
+        logger.error('Error:', error);
+        throw error;
     }
 }
 function calculateTotalSellingPrice(photoEV, hashtagsData) {
@@ -218,7 +220,7 @@ function calculateTotalSellingPrice(photoEV, hashtagsData) {
                         resolve(sellingPrice);
                     })
                     .catch((error) => {
-                        console.error('Error fetching data:', error);
+                        logger.error('Error fetching data:', error);
                         reject(error);
                     });
             });
@@ -246,7 +248,8 @@ async function accessHashtagSheet() {
         return values;
         // db.ref(`/hatsags`).set(columnData);
     } catch (error) {
-        console.error('Error:', error);
+        logger.error('Error:', error);
+        throw error;
     }
 }
 module.exports.get_dashboard = (req, res) => {
@@ -317,43 +320,34 @@ module.exports.post_upload = async (req, res) => {
     const fileName = Date.now() + '-' + file.originalname.replaceAll('.', '-');
     const fileRef = bucket.file(folderName + fileName);
     const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
-    const hashtagsList = hashtags.map((item) => {
-        return item.replace('#', '').replaceAll(' ', '').replaceAll('\n', '');
-    })
-    sharp(file.buffer)
-        .resize({ width: 300 }) // Adjust the dimensions as needed
-        .toBuffer()
-        .then((resizedImageData) => {
+    const hashtagsList = hashtags.map((item) => item.replace('#', '').replaceAll(' ', '').replaceAll('\n', ''))
+    try {
+        const resizedImageData = await sharp(file.buffer).resize({ width: 300 }).toBuffer();
+        await new Promise((resolve, reject) => {
             const uploadStream = fileRef.createWriteStream({
                 metadata: {
                     contentType: file.mimetype,
                 },
             });
-            uploadStream.on('error', (err) => {
-                console.error('Error uploading file:', err);
-                res.status(500).send('Error uploading file.');
-            });
-            uploadStream.on('finish', () => {
-                // Now, store the EXIF data and image URL in the Firebase Realtime Database
-                const exifData = exifParser.create(file.buffer).parse();
-                const serializedExifData = JSON.stringify(exifData);
-                // Store the EXIF data and image URL in the database
-                const data = {
-                    name: fileName,
-                    exifData: serializedExifData,
-                    imageUrl: imageUrl,
-                    hashtags: hashtags,
-                    email: email
-                }
-                addDataToFirebase(data);
-                res.redirect('/dashboard');
-            });
+            uploadStream.on('error', reject);
+            uploadStream.on('finish', resolve);
             uploadStream.end(resizedImageData);
-        })
-        .catch((error) => {
-            console.error('Error resizing image:', error);
-            res.status(500).send('Internal Server Error');
         });
+        const exifData = exifParser.create(file.buffer).parse();
+        const serializedExifData = JSON.stringify(exifData);
+        const data = {
+            name: fileName,
+            exifData: serializedExifData,
+            imageUrl: imageUrl,
+            hashtags: hashtags,
+            email: email
+        };
+        await addDataToFirebase(data);
+        res.redirect('/dashboard');
+    } catch (error) {
+        logger.error('Error uploading file:', error);
+        return res.status(500).send('Error uploading file.');
+    }
     hashtagsList.forEach((hashtag) => {
         updateHashtagCount(hashtag, 1);
     });
@@ -369,50 +363,38 @@ module.exports.post_uploadMultiple = async (req, res) => {
   });
 
   for (const file of files) {
-    // Store the file in Firebase Storage
     const folderName = email.replaceAll('.', '--').replaceAll('@', '-');
     const fileName = Date.now() + '-' + file.originalname.replaceAll('.', '-');
     const fileRef = bucket.file(folderName + fileName);
     const imageUrl = await fileRef.getSignedUrl({ action: 'read', expires: '01-01-2030' });
 
-    sharp(file.buffer)
-      .resize({ width: 300 }) // Adjust the dimensions as needed
-      .toBuffer()
-      .then((resizedImageData) => {
+    try {
+      const resizedImageData = await sharp(file.buffer).resize({ width: 300 }).toBuffer();
+      await new Promise((resolve, reject) => {
         const uploadStream = fileRef.createWriteStream({
           metadata: {
             contentType: file.mimetype,
           },
         });
-
-        uploadStream.on('error', (err) => {
-          console.error('Error uploading file:', err);
-          res.status(500).send('Error uploading file.');
-        });
-
-        uploadStream.on('finish', () => {
-          // Now, store the EXIF data and image URL in the Firebase Realtime Database
-          const exifData = exifParser.create(file.buffer).parse();
-          const serializedExifData = JSON.stringify(exifData);
-
-          // Store the EXIF data and image URL in the database
-          const data = {
-            name: fileName,
-            exifData: serializedExifData,
-            imageUrl: imageUrl,
-            hashtags: hashtags,
-            email: email,
-          };
-
-          addDataToFirebase(data);
-        });
-
+        uploadStream.on('error', reject);
+        uploadStream.on('finish', resolve);
         uploadStream.end(resizedImageData);
-      })
-      .catch((error) => {
-        console.error('Error resizing image:', error);
-        res.status(500).send('Internal Server Error');
       });
+      const exifData = exifParser.create(file.buffer).parse();
+      const serializedExifData = JSON.stringify(exifData);
+      const data = {
+        name: fileName,
+        exifData: serializedExifData,
+        imageUrl: imageUrl,
+        hashtags: hashtags,
+        email: email,
+      };
+
+      await addDataToFirebase(data);
+    } catch (error) {
+      logger.error('Error uploading file:', error);
+      return res.status(500).send('Error uploading file.');
+    }
   }
 
   hashtagsList.forEach((hashtag) => {
