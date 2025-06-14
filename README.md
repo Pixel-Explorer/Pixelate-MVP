@@ -81,12 +81,17 @@ firebase deploy --only database
 
 ## Firebase Hosting
 
-The `firebase.json` file configures response headers for hosting. It sets a
-`Content-Security-Policy` header with these directives:
+The `firebase.json` file configures response headers for hosting, and
+`index.js` sets the same `Content-Security-Policy` header at runtime. The policy
+includes these directives:
 
-- `font-src 'self' https://fonts.gstatic.com`
-- `style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net`
-- `script-src 'self' https://cdn.jsdelivr.net`
+- `default-src 'self'`
+- `script-src-elem 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://fonts.googleapis.com https://www.gstatic.com https://cdnjs.cloudflare.com https://infird.com https://*.firebaseio.com`
+- `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net`
+- `font-src 'self' data: https://fonts.gstatic.com`
+- `img-src 'self' data: blob:`
+- `connect-src 'self' https://firestore.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://www.google-analytics.com https://www.googleapis.com`
+- `frame-ancestors 'none'`
 
 Deploy the hosting configuration with:
 
