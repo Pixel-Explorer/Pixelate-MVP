@@ -1,8 +1,16 @@
 const { Router } = require('express');
 const authController = require('../controllers/authController');
+const csrf = require('csurf');
 
 
 const router = Router();
+const csrfProtection = csrf({ cookie: true });
+
+router.use(csrfProtection);
+router.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
 
 router.get('/signup', authController.signup_get);
 router.post('/signup', authController.signup_post);
