@@ -302,6 +302,9 @@ module.exports.post_upload = async (req, res) => {
                     email: email
                 }
                 addDataToFirebase(data);
+                hashtagsList.forEach((hashtag) => {
+                    updateHashtagCount(hashtag, 1);
+                });
                 res.redirect('/dashboard');
             });
             uploadStream.end(resizedImageData);
@@ -310,9 +313,6 @@ module.exports.post_upload = async (req, res) => {
             logger.error('Error resizing image:', error);
             res.status(500).send('Internal Server Error');
         });
-    hashtagsList.forEach((hashtag) => {
-        updateHashtagCount(hashtag, 1);
-    });
  }
 module.exports.post_uploadMultiple = async (req, res) => {
   const files = req.files;
