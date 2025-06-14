@@ -1,10 +1,12 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const debugRoutes = require('./controllers/debugController');
 const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
+const firebaseClientConfig = require('./firebaseClientConfig');
 // Content Security Policy to match firebase.json
 const CSP_VALUE = "default-src 'self'; " +
   "script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://fonts.googleapis.com https://www.gstatic.com; " +
@@ -15,6 +17,11 @@ const CSP_VALUE = "default-src 'self'; " +
   "frame-ancestors 'none';";
 
 const app = express();
+
+// generate Firebase config for client
+const configPath = path.join(__dirname, 'public', 'firebaseConfig.js');
+const configContent = 'export default ' + JSON.stringify(firebaseClientConfig, null, 2) + ';\n';
+fs.writeFileSync(configPath, configContent);
 
 // middleware
 app.use(express.static('public'));
