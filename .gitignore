@@ -3,3 +3,5 @@ node_modules/
 sdk-firebase.json
 haus-of-pixels*.json
 data.json
+
+.env
