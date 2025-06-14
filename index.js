@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const firebaseClientConfig = require('./firebaseClientConfig');
+const logger = require('./logger');
 
 const app = express();
 
@@ -73,13 +74,13 @@ app.use(debugRoutes);
 const PORT = process.env.PORT || 8080;
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {
-        console.log(`App is listening on ${PORT}`)
+        logger.info(`App is listening on ${PORT}`);
     });
 }
 
 // generic error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    logger.error(err.stack);
     res.status(500).send('Internal Server Error');
 });
 

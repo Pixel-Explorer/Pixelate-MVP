@@ -1,6 +1,7 @@
 const exifParser = require('exif-parser');
 const admin = require('firebase-admin');
 const path = require('path');
+const logger = require('../logger');
 
 const fs = require('fs');
 let serviceAccount;
@@ -25,7 +26,7 @@ try {
                 credential: admin.credential.cert(serviceAccount),
                 databaseURL,
             };
-            console.log(`Loaded SA: ${serviceAccount.projectId}`);
+            logger.info(`Loaded SA: ${serviceAccount.projectId}`);
         }
     }
 } catch (err) {
@@ -75,7 +76,7 @@ async function addDataToFirebase(data) {
     try {
         client.authorize(async function (err) {
             if (err) {
-                console.error('Authentication failed:', err);
+                logger.error('Authentication failed:', err);
                 return;
             }
             const uniqueId = generateUniqueId(11);
@@ -142,7 +143,7 @@ async function addDataToFirebase(data) {
                     return totalSellingPrice;
                 })
                 .catch((error) => {
-                    console.error('Error calculating total selling price:', error);
+                    logger.error('Error calculating total selling price:', error);
                 });
             // const dataArray = [uniqueId, imageUrl, imageUrl, dateTime, 't', width, height, aspectRatio, , data.email.replace('@gmail.com', ''), , , cameraMake, cameraModel, iso, aperture, focalLength, exposerTime, EV, photoLocation, latitude, longitude, photoCountry, photoCity, , , , , , , , , , EV,]
             // const finalArray = dataArray.concat(hashtagsList)
@@ -170,7 +171,7 @@ async function addDataToFirebase(data) {
             db.ref(`/photos`).push(newData);
         });
     } catch (error) {
-        console.error('Error:', error);
+        logger.error('Error:', error);
     }
 }
 function calculateTotalSellingPrice(photoEV, hashtagsData) {
@@ -192,7 +193,7 @@ function calculateTotalSellingPrice(photoEV, hashtagsData) {
                         resolve(sellingPrice);
                     })
                     .catch((error) => {
-                        console.error('Error fetching data:', error);
+                        logger.error('Error fetching data:', error);
                         reject(error);
                     });
             });
@@ -285,7 +286,7 @@ module.exports.post_upload = async (req, res) => {
                 },
             });
             uploadStream.on('error', (err) => {
-                console.error('Error uploading file:', err);
+                logger.error('Error uploading file:', err);
                 res.status(500).send('Error uploading file.');
             });
             uploadStream.on('finish', () => {
@@ -306,7 +307,7 @@ module.exports.post_upload = async (req, res) => {
             uploadStream.end(resizedImageData);
         })
         .catch((error) => {
-            console.error('Error resizing image:', error);
+            logger.error('Error resizing image:', error);
             res.status(500).send('Internal Server Error');
         });
     hashtagsList.forEach((hashtag) => {
@@ -341,7 +342,7 @@ module.exports.post_uploadMultiple = async (req, res) => {
         });
 
         uploadStream.on('error', (err) => {
-          console.error('Error uploading file:', err);
+          logger.error('Error uploading file:', err);
           res.status(500).send('Error uploading file.');
         });
 
@@ -365,7 +366,7 @@ module.exports.post_uploadMultiple = async (req, res) => {
         uploadStream.end(resizedImageData);
       })
       .catch((error) => {
-        console.error('Error resizing image:', error);
+        logger.error('Error resizing image:', error);
         res.status(500).send('Internal Server Error');
       });
   }
@@ -392,7 +393,7 @@ module.exports.post_uploadMultiple = async (req, res) => {
             });
         })
         .catch((error) => {
-            console.error('Error fetching data:', error);
+            logger.error('Error fetching data:', error);
         });
     res.render('getDetails', {
         pageTitle: 'Post',
@@ -412,7 +413,7 @@ module.exports.get_adminDashboard = async (req, res) => {
             console.warn('No documents found.');
         }
     }).catch((error) => {
-        console.error('Error retrieving document names:', error);
+        logger.error('Error retrieving document names:', error);
     });
     const users = documentNames.map((user) => user.replaceAll('--', '.').replace('-', '@'));
     const totalImages = [];
@@ -423,7 +424,7 @@ module.exports.get_adminDashboard = async (req, res) => {
             totalImages.push(totalCount);
         })
             .catch((error) => {
-                console.error('Error counting documents:', error);
+                logger.error('Error counting documents:', error);
             });
     }
     //count hashtags
@@ -460,7 +461,7 @@ module.exports.get_adminDashboard = async (req, res) => {
                 return totalSP;
             })
             .catch((error) => {
-                console.error('Error fetching data:', error);
+                logger.error('Error fetching data:', error);
                 throw error;
             });
         totalUserSP.push(totalSP);
@@ -538,7 +539,7 @@ module.exports.get_adminHashtags = async (req, res) => {
             // return val;
         })
         .catch((error) => {
-            console.error('Error fetching data:', error);
+            logger.error('Error fetching data:', error);
         });
     res.render('admin/adminHashtags', {
         pageTitle: "Admin Dashboard",
@@ -591,7 +592,7 @@ async function fetchPhotos() {
         .then((snapshot) => {
             snapshot.forEach((child) => data.push(child.val()));
         })
-        .catch((error) => console.error('Error fetching photos:', error));
+        .catch((error) => logger.error('Error fetching photos:', error));
     return data;
 }
 
@@ -602,7 +603,7 @@ async function fetchHashtags() {
         .then((snapshot) => {
             snapshot.forEach((child) => data.push(child.val()));
         })
-        .catch((error) => console.error('Error fetching hashtags:', error));
+        .catch((error) => logger.error('Error fetching hashtags:', error));
     return data;
 }
 
@@ -615,7 +616,7 @@ async function fetchUsersSummary() {
                 documentNames = Object.keys(snapshot.val());
             }
         })
-        .catch((error) => console.error('Error retrieving document names:', error));
+        .catch((error) => logger.error('Error retrieving document names:', error));
 
     const users = documentNames.map((u) => u.replaceAll('--', '.').replace('-', '@'));
 
@@ -624,7 +625,7 @@ async function fetchUsersSummary() {
         const ref = db.ref(`users/${user}`);
         await ref.once('value')
             .then((snap) => totalImages.push(snap.numChildren()))
-            .catch((error) => console.error('Error counting documents:', error));
+            .catch((error) => logger.error('Error counting documents:', error));
     }
 
     const totalHashtags = [];
@@ -656,7 +657,7 @@ async function fetchUsersSummary() {
                 return t;
             })
             .catch((error) => {
-                console.error('Error fetching data:', error);
+                logger.error('Error fetching data:', error);
                 return 0;
             });
         totalUserSP.push(sp);
