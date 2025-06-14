@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 const path = require('path');
 
 const fs = require('fs');
+const logger = require('../logger');
 let serviceAccount;
 let firebaseOptions;
 const defaultDbUrl = 'https://pixelate-app-e5126-default-rtdb.firebaseio.com/';
@@ -25,7 +26,7 @@ try {
                 credential: admin.credential.cert(serviceAccount),
                 databaseURL,
             };
-            console.log(`Loaded SA: ${serviceAccount.projectId}`);
+            logger.info(`Loaded SA: ${serviceAccount.projectId}`);
         }
     }
 } catch (err) {
@@ -77,7 +78,7 @@ async function addDataToFirebase(data) {
     try {
         client.authorize(async function (err) {
             if (err) {
-                console.error('Authentication failed:', err);
+                logger.error(`Authentication failed: ${err}`);
                 return;
             }
             const uniqueId = generateUniqueId(11);
@@ -144,7 +145,7 @@ async function addDataToFirebase(data) {
                     return totalSellingPrice;
                 })
                 .catch((error) => {
-                    console.error('Error calculating total selling price:', error);
+                    logger.error(`Error calculating total selling price: ${error}`);
                 });
             // const dataArray = [uniqueId, imageUrl, imageUrl, dateTime, 't', width, height, aspectRatio, , data.email.replace('@gmail.com', ''), , , cameraMake, cameraModel, iso, aperture, focalLength, exposerTime, EV, photoLocation, latitude, longitude, photoCountry, photoCity, , , , , , , , , , EV,]
             // const finalArray = dataArray.concat(hashtagsList)
@@ -170,9 +171,10 @@ async function addDataToFirebase(data) {
             };
             db.ref(`/users/${folderName}`).push(firebaseData);
             db.ref(`/photos`).push(newData);
+            logger.info(`Stored photo for ${data.email}`);
         });
     } catch (error) {
-        console.error('Error:', error);
+         logger.error(`Error: ${error}`);
     }
 }
 async function accessSpreadsheet() {
@@ -196,7 +198,7 @@ async function accessSpreadsheet() {
         }))
         db.ref(`/hashtags`).set(data);
     } catch (error) {
-        console.error('Error:', error);
+         logger.error(`Error: ${error}`);
     }
 }
 function calculateTotalSellingPrice(photoEV, hashtagsData) {
@@ -218,7 +220,7 @@ function calculateTotalSellingPrice(photoEV, hashtagsData) {
                         resolve(sellingPrice);
                     })
                     .catch((error) => {
-                        console.error('Error fetching data:', error);
+                         logger.error(`Error fetching data: ${error}`);
                         reject(error);
                     });
             });
@@ -246,7 +248,7 @@ async function accessHashtagSheet() {
         return values;
         // db.ref(`/hatsags`).set(columnData);
     } catch (error) {
-        console.error('Error:', error);
+         logger.error(`Error: ${error}`);
     }
 }
 module.exports.get_dashboard = (req, res) => {
@@ -277,6 +279,7 @@ module.exports.get_profile = async (req, res) => {
         const data = childSnapshot.val();
         dataArray.push({ key: childSnapshot.key, ...data });
     });
+    logger.info(`Fetched profile data for ${email}`);
     let nextCursor = null;
     let prevCursor = null;
     if (prev) {
@@ -312,6 +315,7 @@ module.exports.post_upload = async (req, res) => {
     }
     const user = res.locals.user;
     const email = user.email;
+    logger.info(`Upload started by ${email}`);
     // Store the file in Firebase Storage
     const folderName = email.replaceAll('.', '--').replaceAll('@', '-');
     const fileName = Date.now() + '-' + file.originalname.replaceAll('.', '-');
@@ -330,7 +334,7 @@ module.exports.post_upload = async (req, res) => {
                 },
             });
             uploadStream.on('error', (err) => {
-                console.error('Error uploading file:', err);
+                 logger.error(`Error uploading file: ${err}`);
                 res.status(500).send('Error uploading file.');
             });
             uploadStream.on('finish', () => {
@@ -346,12 +350,13 @@ module.exports.post_upload = async (req, res) => {
                     email: email
                 }
                 addDataToFirebase(data);
+                logger.info(`Upload finished for ${email}`);
                 res.redirect('/dashboard');
             });
             uploadStream.end(resizedImageData);
         })
         .catch((error) => {
-            console.error('Error resizing image:', error);
+             logger.error(`Error resizing image: ${error}`);
             res.status(500).send('Internal Server Error');
         });
     hashtagsList.forEach((hashtag) => {
@@ -363,6 +368,7 @@ module.exports.post_uploadMultiple = async (req, res) => {
   const hashtags = JSON.parse(req.body.hashtagsMultiple);
   const user = res.locals.user;
   const email = user.email;
+  logger.info(`Multiple upload started by ${email} with ${files.length} files`);
 
   const hashtagsList = hashtags.map((item) => {
     return item.replace('#', '').replaceAll(' ', '').replaceAll('\n', '');
@@ -386,7 +392,7 @@ module.exports.post_uploadMultiple = async (req, res) => {
         });
 
         uploadStream.on('error', (err) => {
-          console.error('Error uploading file:', err);
+           logger.error(`Error uploading file: ${err}`);
           res.status(500).send('Error uploading file.');
         });
 
@@ -405,12 +411,13 @@ module.exports.post_uploadMultiple = async (req, res) => {
           };
 
           addDataToFirebase(data);
+          logger.info(`Uploaded ${fileName} for ${email}`);
         });
 
         uploadStream.end(resizedImageData);
       })
       .catch((error) => {
-        console.error('Error resizing image:', error);
+         logger.error(`Error resizing image: ${error}`);
         res.status(500).send('Internal Server Error');
       });
   }
@@ -437,7 +444,7 @@ module.exports.post_uploadMultiple = async (req, res) => {
             });
         })
         .catch((error) => {
-            console.error('Error fetching data:', error);
+             logger.error(`Error fetching data: ${error}`);
         });
     res.render('getDetails', {
         pageTitle: 'Post',
@@ -454,10 +461,10 @@ module.exports.get_adminDashboard = async (req, res) => {
         if (snapshot.exists()) {
             documentNames = Object.keys(snapshot.val());
         } else {
-            console.warn('No documents found.');
+             logger.warn('No documents found.');
         }
     }).catch((error) => {
-        console.error('Error retrieving document names:', error);
+         logger.error(`Error retrieving document names: ${error}`);
     });
     const users = documentNames.map((user) => user.replaceAll('--', '.').replace('-', '@'));
     const totalImages = [];
@@ -468,7 +475,7 @@ module.exports.get_adminDashboard = async (req, res) => {
             totalImages.push(totalCount);
         })
             .catch((error) => {
-                console.error('Error counting documents:', error);
+                 logger.error(`Error counting documents: ${error}`);
             });
     }
     //count hashtags
@@ -505,7 +512,7 @@ module.exports.get_adminDashboard = async (req, res) => {
                 return totalSP;
             })
             .catch((error) => {
-                console.error('Error fetching data:', error);
+                 logger.error(`Error fetching data: ${error}`);
                 throw error;
             });
         totalUserSP.push(totalSP);
@@ -518,6 +525,7 @@ module.exports.get_adminDashboard = async (req, res) => {
         totalSp: totalUserSP[index].toFixed(3)
     }));
     const userCount = data.length;
+    logger.info(`Admin summary fetched. Users: ${userCount}`);
     res.render('admin/adminDashboard', {
         pageTitle: "Admin Dashboard",
         datas: data,
@@ -542,6 +550,7 @@ module.exports.get_adminPhotos = async (req, res) => {
     snapshot.forEach((childSnapshot) => {
         data.push({ key: childSnapshot.key, ...childSnapshot.val() });
     });
+    logger.info(`Fetched ${data.length} photos for admin view`);
     let nextCursor = null;
     let prevCursor = null;
     if (prev) {
@@ -583,8 +592,9 @@ module.exports.get_adminHashtags = async (req, res) => {
             // return val;
         })
         .catch((error) => {
-            console.error('Error fetching data:', error);
+             logger.error(`Error fetching data: ${error}`);
         });
+    logger.info(`Fetched ${data.length} hashtags for admin view`);
     res.render('admin/adminHashtags', {
         pageTitle: "Admin Dashboard",
         datas: data,
@@ -624,6 +634,7 @@ async function updateHashtagCount(hashtag, count) {
                         avgPrice: newAverage.toString()
                     });
                 }
+                logger.info(`Updated hashtag ${hashtag} count to ${newCount}`);
             })
         })
 }
@@ -636,7 +647,7 @@ async function fetchPhotos() {
         .then((snapshot) => {
             snapshot.forEach((child) => data.push(child.val()));
         })
-        .catch((error) => console.error('Error fetching photos:', error));
+        .catch((error) =>  logger.error(`Error fetching photos: ${error}`));
     return data;
 }
 
@@ -647,7 +658,7 @@ async function fetchHashtags() {
         .then((snapshot) => {
             snapshot.forEach((child) => data.push(child.val()));
         })
-        .catch((error) => console.error('Error fetching hashtags:', error));
+        .catch((error) =>  logger.error(`Error fetching hashtags: ${error}`));
     return data;
 }
 
@@ -660,7 +671,7 @@ async function fetchUsersSummary() {
                 documentNames = Object.keys(snapshot.val());
             }
         })
-        .catch((error) => console.error('Error retrieving document names:', error));
+        .catch((error) =>  logger.error(`Error retrieving document names: ${error}`));
 
     const users = documentNames.map((u) => u.replaceAll('--', '.').replace('-', '@'));
 
@@ -669,7 +680,7 @@ async function fetchUsersSummary() {
         const ref = db.ref(`users/${user}`);
         await ref.once('value')
             .then((snap) => totalImages.push(snap.numChildren()))
-            .catch((error) => console.error('Error counting documents:', error));
+            .catch((error) =>  logger.error(`Error counting documents: ${error}`));
     }
 
     const totalHashtags = [];
@@ -701,7 +712,7 @@ async function fetchUsersSummary() {
                 return t;
             })
             .catch((error) => {
-                console.error('Error fetching data:', error);
+                 logger.error(`Error fetching data: ${error}`);
                 return 0;
             });
         totalUserSP.push(sp);

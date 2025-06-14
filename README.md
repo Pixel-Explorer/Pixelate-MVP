@@ -110,6 +110,12 @@ npm test
 
 This project uses Jest for testing, and `NODE_ENV` defaults to `test` when the suite runs.
 
+## Logging
+
+The server uses the [winston](https://github.com/winstonjs/winston) library for logging.
+Logs are printed to the console and saved to `logs/app.log` in the project root.
+The `logs/` directory is automatically created when the application starts.
+
 
 ## License
 

@@ -1,9 +1,11 @@
 const admin = require('firebase-admin');
 
+const logger = require('../logger');
+
 const firebaseClientConfig = require('../firebaseClientConfig');
 
 const handleErrors = (err) => {
-    console.error(err.message, err.code);
+    logger.error(`${err.message} ${err.code}`);
     let errors = { email: '', password: '' };
 
     if (err.message === 'Incorrect Email') {
@@ -49,11 +51,12 @@ module.exports.signup_post = async (req, res) => {
         const userResponse = await admin.auth().createUser({
             email: req.body.email,
             password: req.body.password,
-        })
+        });
+        logger.info(`User signup: ${req.body.email}`);
         res.json(userResponse);
-    }
-    catch (err) {
+    } catch (err) {
         const errors = handleErrors(err);
+        logger.error(`Signup failed for ${req.body.email}`);
         res.status(400).json({ errors });
     }
 }
@@ -74,20 +77,24 @@ module.exports.login_post = async (req, res) => {
                     options.secure = true;
                 }
                 res.cookie('session', sessionCookie, options);
+                logger.info(`User login: ${req.body.email || 'unknown'}`);
                 res.end(JSON.stringify({ status: 'success' }));
             },
             (err) => {
                 const errors = handleErrors(err);
+                logger.error('Login failed');
                 res.status(400).json({ errors });
             }
         )
         .catch((err) => {
             const errors = handleErrors(err);
+            logger.error('Login failed');
             res.status(400).json({ errors });
         })
 }
 
 module.exports.logout_get = (req, res) => {
     res.clearCookie("session");
+    logger.info('User logged out');
     res.redirect('/');
 }

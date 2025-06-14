@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const logger = require('./logger');
 const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const debugRoutes = require('./controllers/debugController');
@@ -73,13 +74,13 @@ app.use(debugRoutes);
 const PORT = process.env.PORT || 8080;
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {
-        console.log(`App is listening on ${PORT}`)
+        logger.info(`App is listening on ${PORT}`);
     });
 }
 
 // generic error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    logger.error(err.stack);
     res.status(500).send('Internal Server Error');
 });
 
