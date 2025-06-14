@@ -49,6 +49,8 @@ app.use(
         "https://firestore.googleapis.com",
         "https://*.firebaseio.com",
         "https://identitytoolkit.googleapis.com",
+        "https://www.google-analytics.com",
+        "https://www.googleapis.com",
       ],
       "frame-ancestors": ["'none'"],
     },
