@@ -7,8 +7,8 @@ This project is a Node.js application for managing blog posts and photo uploads 
 - **Node.js**: version 20 or higher is required. You can check your version with `node --version`.
 - **Firebase configuration**: the application looks for a service account JSON
   file mounted at `/etc/secrets/firebase-service-account-key.json`. If present,
-  it will be used automatically. When running locally, you can instead supply
-  the credentials via environment variables:
+  it will be used automatically. When running locally, supply **all** Firebase
+  settings via environment variables:
   - `FIREBASE_PROJECT_ID`
   - `FIREBASE_CLIENT_EMAIL`
   - `FIREBASE_PRIVATE_KEY` (escape newlines with `\n`)
@@ -24,7 +24,8 @@ This project is a Node.js application for managing blog posts and photo uploads 
   - `FIREBASE_APP_ID`
   - `FIREBASE_MEASUREMENT_ID`
 
-Ensure these variables are set with your own credentials before starting the application.
+The application will exit during startup if any required variable is missing,
+so make sure to provide your own values before running the server.
 
 ## Installation
 
