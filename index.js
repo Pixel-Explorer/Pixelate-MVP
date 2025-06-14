@@ -47,4 +47,10 @@ if (process.env.NODE_ENV !== 'test') {
     });
 }
 
+// generic error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Internal Server Error');
+});
+
 module.exports = app;
