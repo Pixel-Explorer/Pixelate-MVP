@@ -81,7 +81,7 @@ firebase deploy --only database
 
 ## Firebase Hosting
 
-The `firebase.json` file configures response headers for hosting. It sets a `Content-Security-Policy` header that allows fonts loaded from `data:` URLs and scripts served from `blob:` URIs.
+The `firebase.json` file configures response headers for hosting. It sets a `Content-Security-Policy` header that allows fonts from 'self' and https://fonts.gstatic.com, styles from 'self', https://fonts.googleapis.com, https://cdn.jsdelivr.net, and scripts from 'self' and https://cdn.jsdelivr.net.
 
 Deploy the hosting configuration with:
 
