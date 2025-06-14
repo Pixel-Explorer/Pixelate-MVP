@@ -5,3 +5,4 @@ haus-of-pixels*.json
 data.json
 
 .env
+public/firebaseConfig.js
