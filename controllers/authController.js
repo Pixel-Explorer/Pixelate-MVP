@@ -41,14 +41,16 @@ const handleErrors = (err) => {
 module.exports.signup_get = (req, res) => {
     res.render('signup', {
         pageTitle: "Sign Up",
-        firebaseConfig: firebaseClientConfig
+        firebaseConfig: firebaseClientConfig,
+        csrfToken: req.csrfToken()
     });
 }
 
 module.exports.login_get = (req, res) => {
     res.render('login', {
         pageTitle: "Login",
-        firebaseConfig: firebaseClientConfig
+        firebaseConfig: firebaseClientConfig,
+        csrfToken: req.csrfToken()
     });
 }
 
