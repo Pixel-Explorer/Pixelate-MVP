@@ -17,10 +17,6 @@ const configContent = 'export default ' + JSON.stringify(firebaseClientConfig, n
 fs.writeFileSync(configPath, configContent);
 
 // middleware
-app.use(express.static('public'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -56,6 +52,10 @@ app.use(
     },
   })
 );
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use("/css", express.static(path.join(__dirname, "node_modules/bootstrap/dist/css")))
 app.use("/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist/js")))
 app.use("/jquery", express.static(path.join(__dirname, "node_modules/jquery/dist")))
