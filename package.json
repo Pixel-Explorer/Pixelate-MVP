@@ -1,7 +1,7 @@
 {
   "name": "nodejs-blog-app",
   "version": "1.0.0",
-  "description": "Blog application using Node.js and MongoDB with authentication using JWT",
+  "description": "Blog application using Node.js and Firebase with authentication using JWT",
   "main": "index.js",
   "scripts": {
     "test": "jest",
