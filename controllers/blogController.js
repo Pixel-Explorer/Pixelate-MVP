@@ -49,8 +49,6 @@ const storage = admin.storage();
 const db = admin.database();
 const bucketName = process.env.FIREBASE_BUCKET || 'pixelate-app-e5126.appspot.com';
 const bucket = storage.bucket(bucketName);
-const sheets = google.sheets('v4');
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 const sheetCred = {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
     private_key: process.env.GOOGLE_PRIVATE_KEY && process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
@@ -175,30 +173,6 @@ async function addDataToFirebase(data) {
         console.error('Error:', error);
     }
 }
-async function accessSpreadsheet() {
-    try {
-        const sheetsAPI = await sheets.spreadsheets.values;
-        const spreadsheetId = '1tUX5QR7Ap47r6iIfdDHZsm4p8UoYw7jbxzSGRyt_bsk'; // Replace with your Google Spreadsheet ID
-        const range = 'Hashtag Values!A3:XFD'; // Replace with the desired sheet and column
-        const response = await sheetsAPI.get({
-            auth: client,
-            spreadsheetId,
-            range,
-        });
-        const values = response.data.values;
-        const data = values.map((value) => ({
-            title: value[0],
-            count: value[8] || 0,
-            stdDv: value[5],
-            desiredMean: value[6] || 0,
-            utilityTokensLocked: value[7] || 0,
-            avgPrice: value[7] / value[8] || 0
-        }))
-        db.ref(`/hashtags`).set(data);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
 function calculateTotalSellingPrice(photoEV, hashtagsData) {
     return Promise.all(
         hashtagsData.map((hashtag) => {
@@ -229,25 +203,6 @@ function calculateTotalSellingPrice(photoEV, hashtagsData) {
             const totalSellingPrice = sellingPrices.reduce((total, price) => total + price, 0);
             return totalSellingPrice;
         });
-}
-async function accessHashtagSheet() {
-    try {
-        const sheetsAPI = await sheets.spreadsheets.values;
-        const spreadsheetId = '1tUX5QR7Ap47r6iIfdDHZsm4p8UoYw7jbxzSGRyt_bsk'; // Replace with your Google Spreadsheet ID
-        const range = 'Hashtag Values!A3:XFD'; // Replace with the desired sheet and column
-        // const authClient = await auth.getClient();
-        const response = await sheetsAPI.get({
-            auth: client,
-            spreadsheetId,
-            range,
-        });
-        const values = response.data.values;
-        // values.map(row => columnData.push(row));
-        return values;
-        // db.ref(`/hatsags`).set(columnData);
-    } catch (error) {
-        console.error('Error:', error);
-    }
 }
 module.exports.get_dashboard = (req, res) => {
     res.render('home', {
