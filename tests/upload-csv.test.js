@@ -12,7 +12,12 @@ jest.mock('csurf', () => () => (req, res, next) => {
 });
 
 jest.mock('../controllers/blogController', () => ({
-  post_upload: (req, res) => res.redirect('/dashboard'),
+  post_upload: (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: 'no file uploaded' });
+    }
+    res.redirect('/dashboard');
+  },
   post_uploadMultiple: (req, res) => res.redirect('/dashboard'),
   fetchPhotos: jest.fn(() => Promise.resolve([
     {
@@ -51,6 +56,14 @@ describe('Upload handlers', () => {
       .attach('photo', Buffer.from('dummy'), 'test.jpg');
     expect(res.statusCode).toBe(302);
     expect(res.headers['location']).toBe('/dashboard');
+  });
+
+  it('POST /upload without file returns JSON error', async () => {
+    const res = await request(app)
+      .post('/upload')
+      .field('hashtags', JSON.stringify(['#tag1']));
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('no file uploaded');
   });
 
   it('POST /upload-multiple should redirect after multiple upload', async () => {
