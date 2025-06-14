@@ -61,4 +61,12 @@ describe('POST /login cookie options', () => {
     expect(res.statusCode).toBe(200);
     expect(res.headers['set-cookie'][0]).toMatch(/Secure/);
   });
+
+  it('returns 400 when idToken is missing', async () => {
+    const res = await request(app)
+      .post('/login')
+      .send({});
+    expect(res.statusCode).toBe(400);
+    expect(res.body.error).toBe('Missing idToken');
+  });
 });
