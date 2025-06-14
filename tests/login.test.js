@@ -2,7 +2,11 @@ process.env.NODE_ENV = 'test';
 
 jest.mock('../middleware/authMiddleware', () => ({
   requireAuth: (req, res, next) => next(),
-  checkUser: (req, res, next) => next(),
+  checkUser: (req, res, next) => {
+    res.locals.user = null;
+    res.locals.isAdmin = false;
+    next();
+  },
   requireAdmin: (req, res, next) => next(),
 }));
 
@@ -60,5 +64,13 @@ describe('POST /login cookie options', () => {
       .send({ idToken: 'abc' });
     expect(res.statusCode).toBe(200);
     expect(res.headers['set-cookie'][0]).toMatch(/Secure/);
+  });
+});
+
+describe('Security headers', () => {
+  it('sets the Content-Security-Policy header', async () => {
+    const res = await request(app).get('/login');
+    expect(res.statusCode).toBe(200);
+    expect(res.headers['content-security-policy']).toBeDefined();
   });
 });
