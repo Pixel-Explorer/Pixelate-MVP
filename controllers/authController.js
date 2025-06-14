@@ -60,13 +60,16 @@ module.exports.signup_post = async (req, res) => {
 
 module.exports.login_post = async (req, res) => {
 
-    const idToken = req.body.idToken.toString();
+    const idToken = req.body.idToken;
+    if (!idToken) {
+        return res.status(400).json({ error: 'Missing idToken' });
+    }
 
     const expiresIn = 60 * 60 * 24 * 5 * 1000;
 
     admin
         .auth()
-        .createSessionCookie(idToken, { expiresIn })
+        .createSessionCookie(idToken.toString(), { expiresIn })
         .then(
             (sessionCookie) => {
                 const options = { maxAge: expiresIn, httpOnly: true };
