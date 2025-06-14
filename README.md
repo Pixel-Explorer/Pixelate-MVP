@@ -29,7 +29,7 @@ so make sure to provide your own values before running the server.
 
 ## Installation
 
-1. Install dependencies:
+1. Install dependencies (includes `winston` for logging):
    ```bash
    npm install
    ```
@@ -42,6 +42,19 @@ so make sure to provide your own values before running the server.
    You can also use `npm start` if you have updated the `start` script accordingly.
 
 The application serves static files from the `public` directory and uses EJS templates in `views`.
+
+## Logging
+
+This project uses the [Winston](https://github.com/winstonjs/winston) logger, configured in
+[`logger.js`](logger.js). The log level defaults to `info` but can be changed with
+the `LOG_LEVEL` environment variable:
+
+```bash
+LOG_LEVEL=debug node index.js
+```
+
+By default logs are sent to the console. Additional transports or formatting can
+be customized by editing `logger.js`.
 
 ## Deployment
 
