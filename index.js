@@ -5,16 +5,9 @@ const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const debugRoutes = require('./controllers/debugController');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const firebaseClientConfig = require('./firebaseClientConfig');
-// Content Security Policy to match firebase.json
-const CSP_VALUE = "default-src 'self'; " +
-  "script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://fonts.googleapis.com https://www.gstatic.com; " +
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
-  "font-src 'self' data: https://fonts.gstatic.com; " +
-  "img-src 'self' data: blob:; " +
-  "connect-src 'self' https://firestore.googleapis.com https://*.firebaseio.com; " +
-  "frame-ancestors 'none';";
 
 const app = express();
 
@@ -28,11 +21,39 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// apply the same Content Security Policy as firebase hosting
-app.use((req, res, next) => {
-    res.setHeader('Content-Security-Policy', CSP_VALUE);
-    next();
-});
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "default-src": ["'self'"],
+      "script-src-elem": [
+        "'self'",
+        "'unsafe-inline'",
+        "blob:",
+        "https://cdn.jsdelivr.net",
+        "https://fonts.googleapis.com",
+        "https://www.gstatic.com",
+        "https://cdnjs.cloudflare.com",
+        "https://infird.com",
+        "https://*.firebaseio.com",
+      ],
+      "style-src": [
+        "'self'",
+        "'unsafe-inline'",
+        "https://fonts.googleapis.com",
+        "https://cdn.jsdelivr.net",
+      ],
+      "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
+      "img-src": ["'self'", "data:", "blob:"],
+      "connect-src": [
+        "'self'",
+        "https://firestore.googleapis.com",
+        "https://*.firebaseio.com",
+        "https://identitytoolkit.googleapis.com",
+      ],
+      "frame-ancestors": ["'none'"],
+    },
+  })
+);
 app.use("/css", express.static(path.join(__dirname, "node_modules/bootstrap/dist/css")))
 app.use("/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist/js")))
 app.use("/jquery", express.static(path.join(__dirname, "node_modules/jquery/dist")))
