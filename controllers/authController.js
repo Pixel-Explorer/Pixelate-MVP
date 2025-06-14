@@ -1,9 +1,10 @@
 const admin = require('firebase-admin');
+const logger = require('../logger');
 
 const firebaseClientConfig = require('../firebaseClientConfig');
 
 const handleErrors = (err) => {
-    console.error(err.message, err.code);
+    logger.error(err.message, err.code);
     let errors = { email: '', password: '' };
 
     if (err.message === 'Incorrect Email') {
