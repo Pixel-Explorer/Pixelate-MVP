@@ -422,7 +422,7 @@ module.exports.post_uploadMultiple = async (req, res) => {
   res.redirect('/dashboard');
 };
 
- exports.get_postData = async (req, res) => {
+ module.exports.get_postData = async (req, res) => {
      const user = res.locals.user;
      const email = user.email;
      const folderName = email.replaceAll('.', '--').replace('@', '-');
