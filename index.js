@@ -7,9 +7,12 @@ const cookieParser = require('cookie-parser');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 // Content Security Policy to match firebase.json
 const CSP_VALUE = "default-src 'self'; " +
-  "font-src 'self' https://fonts.gstatic.com; " +
-  "style-src 'self' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
-  "script-src 'self' https://cdn.jsdelivr.net;";
+  "script-src 'self' 'unsafe-inline' blob: https://cdn.jsdelivr.net https://fonts.googleapis.com; " +
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+  "font-src 'self' data: https://fonts.gstatic.com; " +
+  "img-src 'self' data: blob:; " +
+  "connect-src 'self' https://firestore.googleapis.com https://*.firebaseio.com; " +
+  "frame-ancestors 'none';";
 
 const app = express();
 
