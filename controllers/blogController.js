@@ -410,7 +410,7 @@ module.exports.get_adminDashboard = async (req, res) => {
         if (snapshot.exists()) {
             documentNames = Object.keys(snapshot.val());
         } else {
-            console.warn('No documents found.');
+            logger.warn('No documents found.');
         }
     }).catch((error) => {
         logger.error('Error retrieving document names:', error);
