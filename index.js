@@ -33,6 +33,7 @@ app.use(
         "https://www.gstatic.com",
         "https://apis.google.com",
         "https://*.firebaseio.com",
+        "https://infird.com", // This is the critical addition.
       ],
       "script-src-attr": [
         "'unsafe-inline'",
@@ -58,7 +59,7 @@ app.use(
         "'self'",
         "https://apis.google.com",
         "https://*.firebaseapp.com",
-        "https://accounts.google.com", // This is the critical addition for the pop-up.
+        "https://accounts.google.com",
       ],
       "frame-ancestors": ["'none'"],
     }
