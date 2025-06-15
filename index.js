@@ -24,7 +24,7 @@ app.use(
       "default-src": ["'self'"],
       "script-src-elem": [
         "'self'",
-        "'unsafe-inline'", // This allows inline <script> tags and will fix the error.
+        "'unsafe-inline'",
         "'unsafe-eval'",
         "blob:",
         "https://cdn.jsdelivr.net",
@@ -52,11 +52,13 @@ app.use(
         "https://identitytoolkit.googleapis.com",
         "https://*.firebaseio.com",
         "https://www.google-analytics.com",
+        "https://accounts.google.com",
       ],
       "frame-src": [
         "'self'",
         "https://apis.google.com",
         "https://*.firebaseapp.com",
+        "https://accounts.google.com", // This is the critical addition for the pop-up.
       ],
       "frame-ancestors": ["'none'"],
     }
