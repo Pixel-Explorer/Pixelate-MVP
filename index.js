@@ -48,7 +48,7 @@ app.use(
       "img-src": ["'self'", "data:", "blob:"],
       "connect-src": [
         "'self'",
-        "https.firestore.googleapis.com",
+        "https://firestore.googleapis.com",
         "https://www.googleapis.com",
         "https://identitytoolkit.googleapis.com",
         "https://*.firebaseio.com",
