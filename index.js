@@ -22,7 +22,7 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       "default-src": ["'self'"],
-      "script-src-elem": [
+      "script-src": [
         "'self'",
         "'unsafe-inline'",
         "'unsafe-eval'",
@@ -34,6 +34,19 @@ app.use(
         "https://apis.google.com",
         "https://*.firebaseio.com",
         "https://infird.com", // This is the critical addition.
+      ],
+      "script-src-elem": [
+        "'self'",
+        "'unsafe-inline'",
+        "'unsafe-eval'",
+        "blob:",
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com",
+        "https://fonts.googleapis.com",
+        "https://www.gstatic.com",
+        "https://apis.google.com",
+        "https://*.firebaseio.com",
+        "https://infird.com",
       ],
       "script-src-attr": [
         "'unsafe-inline'",
@@ -48,7 +61,7 @@ app.use(
       "img-src": ["'self'", "data:", "blob:"],
       "connect-src": [
         "'self'",
-        "https.firestore.googleapis.com",
+        "https://firestore.googleapis.com",
         "https://www.googleapis.com",
         "https://identitytoolkit.googleapis.com",
         "https://*.firebaseio.com",
