@@ -100,7 +100,8 @@ The `firebase.json` file configures response headers for hosting, and
 includes these directives:
 
 - `default-src 'self'`
-- `script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://fonts.googleapis.com https://www.gstatic.com https://cdnjs.cloudflare.com https://infird.com https://*.firebaseio.com`
+- `script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://infird.com`
+- `script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://infird.com`
 - `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net`
 - `font-src 'self' data: https://fonts.gstatic.com`
 - `img-src 'self' data: blob:`
