@@ -24,6 +24,7 @@ app.use(
       "default-src": ["'self'"],
       "script-src-elem": [
         "'self'",
+        "'unsafe-inline'", // This allows inline <script> tags and will fix the error.
         "'unsafe-eval'",
         "blob:",
         "https://cdn.jsdelivr.net",
@@ -46,7 +47,7 @@ app.use(
       "img-src": ["'self'", "data:", "blob:"],
       "connect-src": [
         "'self'",
-        "https://firestore.googleapis.com",
+        "https.firestore.googleapis.com",
         "https://www.googleapis.com",
         "https://identitytoolkit.googleapis.com",
         "https://*.firebaseio.com",
@@ -58,7 +59,7 @@ app.use(
         "https://*.firebaseapp.com",
       ],
       "frame-ancestors": ["'none'"],
-    },
+    }
   })
 );
 app.use(express.static('public'));
