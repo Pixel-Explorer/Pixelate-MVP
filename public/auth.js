@@ -55,10 +55,6 @@ if (googleSignUpButton) {
     firebase
       .auth()
       .signInWithPopup(provider)
-      .then((result) => {
-        const { user } = result;
-        console.log('New user signed up:', user);
-      })
       .catch((error) => {
         console.error('Error signing up:', error);
       });

@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const logger = require('../logger');
 
 // list of admin emails supplied via environment variable
 const adminEmails = (process.env.ADMIN_EMAILS || '')
@@ -19,7 +20,7 @@ const requireAuth = (req, res, next) => {
             next();
         })
         .catch((error) => {
-            console.log(error);
+            logger.error(error);
             res.status(401).json({ error: 'User is not authenticated' });
         });
 }
@@ -40,7 +41,7 @@ const requireAdmin = (req, res, next) => {
             next();
         })
         .catch((error) => {
-            console.log(error);
+            logger.error(error);
             res.status(401).json({ error: 'User is not authenticated' });
         });
 }

@@ -163,7 +163,6 @@
         selectedHashtag.className = 'selected-hashtag';
         selectedHashtags.appendChild(selectedHashtag);
         selectedHashtagsList.push(event.target.textContent);
-        console.log(selectedHashtagsList);
         hashtagInput.value = '';
         hashtagList.style.display = 'none';
       }
@@ -175,7 +174,6 @@
         selectedHashtag.className = 'selected-hashtag';
         selectedHashtagsMultiple.appendChild(selectedHashtag);
         selectedHashtagsMultipleList.push(event.target.textContent);
-        console.log(selectedHashtagsMultipleList);
         hashtagInputMultiple.value = '';
         hashtagListMultiple.style.display = 'none';
       }
@@ -186,7 +184,6 @@
         if (index > -1) {
           selectedHashtagsList.splice(index, 1);
         }
-        console.log(selectedHashtagsList);
         event.target.remove();
       }
     });
@@ -196,7 +193,6 @@
         if (index > -1) {
           selectedHashtagsMultipleList.splice(index, 1);
         }
-        console.log(selectedHashtagsMultipleList);
         event.target.remove();
       }
     });
@@ -205,12 +201,10 @@
       e.preventDefault();
       const imageInput = document.getElementById('image-input');
       const image = imageInput.files[0];
-      // console.log(image);
       const formData = new FormData();
       formData.append('photo', image);
       formData.append('hashtags', JSON.stringify(selectedHashtagsList));
       formData.append('_csrf', csrfToken);
-      console.log(formData);
       try {
         const res = await fetch('/upload', {
           method: 'POST',
@@ -219,7 +213,7 @@
         });
       }
        catch (err) {
-         console.log(err);
+         
        }
      });
      const uploadFormMultiple = document.getElementById('upload-multiple');
@@ -235,7 +229,6 @@
       }
       formData.append('hashtagsMultiple', JSON.stringify(selectedHashtagsMultipleList));
       formData.append('_csrf', csrfToken);
-      // console.log(formData);
       try {
         const res = await fetch('/upload-multiple', {
           method: 'POST',
@@ -244,7 +237,7 @@
         });
       }
        catch (err) {
-         console.log(err);
+         
        }
      });
      function createHashtagButton(hashtagText, container) {
@@ -262,7 +255,6 @@
         if (!selectedHashtagsList.includes(selectedHashtagText)) {
           createHashtagButton(selectedHashtagText, selectedHashtags);
           selectedHashtagsList.push(selectedHashtagText);
-          console.log(selectedHashtagsList);
         }
         hashtagInput.value = '';
         hashtagList.style.display = 'none';
@@ -274,7 +266,6 @@
         if (!selectedHashtagsMultipleList.includes(selectedHashtagText)) {
           createHashtagButton(selectedHashtagText, selectedHashtagsMultiple);
           selectedHashtagsMultipleList.push(selectedHashtagText);
-          console.log(selectedHashtagsMultipleList);
         }
         hashtagInputMultiple.value = '';
         hashtagListMultiple.style.display = 'none';
@@ -292,7 +283,6 @@
           button.remove();
         }
       });
-      console.log(list);
     }
     selectedHashtags.addEventListener('click', (event) => {
       if (event.target.tagName === 'BUTTON') {
