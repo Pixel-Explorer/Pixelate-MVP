@@ -1,7 +1,15 @@
 import firebaseConfig from './firebaseConfig.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth();
 
 // Attach Google authentication handlers
 
