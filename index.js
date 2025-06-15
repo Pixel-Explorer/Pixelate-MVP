@@ -25,6 +25,7 @@ app.use(
       "script-src-elem": [
         "'self'",
         "'unsafe-eval'",
+        "blob:",
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com",
         "https://fonts.googleapis.com",
