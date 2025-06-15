@@ -1,3 +1,8 @@
+import firebaseConfig from './firebaseConfig.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+
+const app = initializeApp(firebaseConfig);
+
 // Attach Google authentication handlers
 
 const googleSignInButton = document.querySelector('#google-signin-btn');
