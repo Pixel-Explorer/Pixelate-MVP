@@ -25,7 +25,6 @@ app.use(
       "script-src": [
         "'self'",
         "'unsafe-inline'",
-        "'unsafe-eval'",
         "blob:",
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com",
@@ -33,12 +32,14 @@ app.use(
         "https://www.gstatic.com",
         "https://apis.google.com",
         "https://*.firebaseio.com",
-        "https://infird.com", // This is the critical addition.
+        "https://identitytoolkit.googleapis.com",
+        "https://securetoken.googleapis.com",
+        "https://www.googleapis.com",
+        "https://infird.com",
       ],
       "script-src-elem": [
         "'self'",
         "'unsafe-inline'",
-        "'unsafe-eval'",
         "blob:",
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com",
@@ -46,6 +47,9 @@ app.use(
         "https://www.gstatic.com",
         "https://apis.google.com",
         "https://*.firebaseio.com",
+        "https://identitytoolkit.googleapis.com",
+        "https://securetoken.googleapis.com",
+        "https://www.googleapis.com",
         "https://infird.com",
       ],
       "script-src-attr": [
@@ -64,6 +68,7 @@ app.use(
         "https://firestore.googleapis.com",
         "https://www.googleapis.com",
         "https://identitytoolkit.googleapis.com",
+        "https://securetoken.googleapis.com",
         "https://*.firebaseio.com",
         "https://www.google-analytics.com",
         "https://accounts.google.com",
@@ -75,9 +80,16 @@ app.use(
         "https://accounts.google.com",
       ],
       "frame-ancestors": ["'none'"],
+      "report-uri": ["/csp-report"],
     }
   })
 );
+
+// endpoint to log CSP violations
+app.post('/csp-report', express.json({ type: 'application/csp-report' }), (req, res) => {
+    logger.error('CSP Violation Report:', JSON.stringify(req.body, null, 2));
+    res.status(204).end();
+});
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

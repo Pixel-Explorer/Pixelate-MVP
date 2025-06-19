@@ -16,7 +16,6 @@ function parseCsp(header) {
 const expectedScriptSrc = [
   "'self'",
   "'unsafe-inline'",
-  "'unsafe-eval'",
   'blob:',
   'https://cdn.jsdelivr.net',
   'https://cdnjs.cloudflare.com',
@@ -24,6 +23,9 @@ const expectedScriptSrc = [
   'https://www.gstatic.com',
   'https://apis.google.com',
   'https://*.firebaseio.com',
+  'https://identitytoolkit.googleapis.com',
+  'https://securetoken.googleapis.com',
+  'https://www.googleapis.com',
   'https://infird.com',
 ];
 
