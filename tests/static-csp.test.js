@@ -16,7 +16,6 @@ function parseCsp(header) {
 const expectedScriptSrc = [
   "'self'",
   "'unsafe-inline'",
-  "'unsafe-eval'",
   'blob:',
   'https://cdn.jsdelivr.net',
   'https://cdnjs.cloudflare.com',

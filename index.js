@@ -25,7 +25,6 @@ app.use(
       "script-src": [
         "'self'",
         "'unsafe-inline'",
-        "'unsafe-eval'",
         "blob:",
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com",
@@ -41,7 +40,6 @@ app.use(
       "script-src-elem": [
         "'self'",
         "'unsafe-inline'",
-        "'unsafe-eval'",
         "blob:",
         "https://cdn.jsdelivr.net",
         "https://cdnjs.cloudflare.com",
