@@ -4,10 +4,12 @@
   "description": "Blog application using Node.js and Firebase with authentication using JWT",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "start": "nodemon index.js"
+    "build:config": "node -r dotenv/config ./scripts/generate-config.js",
+    "build:assets": "node ./scripts/build-assets.js",
+    "start": "npm run build:config && npm run build:assets && nodemon -r dotenv/config index.js",
+    "test": "jest"
   },
-  "author": "Harshit Rathod",
+  "author": "Anirudh Venkatesan",
   "license": "ISC",
   "engines": {
     "node": ">=20"
@@ -20,7 +22,7 @@
   "dependencies": {
     "bootstrap": "^5.3.2",
     "cookie-parser": "^1.4.6",
-    "csurf": "^1.11.0",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
     "exif-parser": "^0.1.12",
     "express": "^4.18.2",
@@ -32,6 +34,7 @@
     "moment": "^2.29.4",
     "multer": "^1.4.5-lts.1",
     "sharp": "^0.32.6",
+    "tiny-csrf": "^1.1.4",
     "winston": "^3.17.0"
   }
 }

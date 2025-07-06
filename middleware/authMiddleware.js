@@ -7,61 +7,50 @@ const adminEmails = (process.env.ADMIN_EMAILS || '')
     .map((e) => e.trim())
     .filter(Boolean);
 
-const requireAuth = (req, res, next) => {
-    const sessionCookie = req.cookies.session || '';
-
-    admin
-        .auth()
-        .verifySessionCookie(sessionCookie, true)
-        .then((decodedClaims) => {
-            if(!decodedClaims){
-                return res.status(401).json({ error: 'User is not authenticated' });
-            }
-            next();
-        })
-        .catch((error) => {
-            logger.error(error);
-            res.status(401).json({ error: 'User is not authenticated' });
-        });
-}
-
-const requireAdmin = (req, res, next) => {
-    const sessionCookie = req.cookies.session || '';
-
-    admin
-        .auth()
-        .verifySessionCookie(sessionCookie, true)
-        .then((decodedClaims) => {
-            if(!decodedClaims){
-                return res.status(401).json({ error: 'User is not authenticated' });
-            }
-            if(!res.locals.isAdmin){
-                return res.status(403).json({ error: 'Admin privileges required' });
-            }
-            next();
-        })
-        .catch((error) => {
-            logger.error(error);
-            res.status(401).json({ error: 'User is not authenticated' });
-        });
-}
-
-// check current user
+// Populates res.locals with user info if a valid session cookie exists.
+// This should run on every request. It NEVER blocks a request.
 const checkUser = async (req, res, next) => {
-    const token = req.cookies.session || " ";
+    const sessionCookie = req.cookies.session || '';
+    // Set defaults
+    res.locals.user = null;
     res.locals.isAdmin = false;
-    try {
-        const decodedClaims = await admin.auth().verifySessionCookie(token, true);
-        res.locals.user = decodedClaims;
-        if (adminEmails.includes(res.locals.user.email)) {
-            res.locals.isAdmin = true;
-        }
-        next();
-    } catch (error) {
-        res.locals.user = null;
-        next();
+
+    if (!sessionCookie) {
+        return next();
     }
 
+    try {
+        const decodedClaims = await admin.auth().verifySessionCookie(sessionCookie, true);
+        res.locals.user = decodedClaims;
+        if (adminEmails.includes(decodedClaims.email)) {
+            res.locals.isAdmin = true;
+        }
+    } catch (error) {
+        // The cookie is invalid (e.g., expired). The user is effectively logged out.
+        // This is a normal occurrence, not a server error.
+        logger.info({ message: 'Invalid session cookie presented.', error: error.code });
+        res.clearCookie('session'); // Clear the invalid cookie from the browser
+    }
+
+    next();
+};
+
+// Protects a route, requiring a valid user session to proceed.
+// This middleware MUST run AFTER checkUser.
+const requireAuth = (req, res, next) => {
+    if (!res.locals.user) {
+        return res.status(401).json({ error: 'Authentication required.' });
+    }
+    next();
+};
+
+// Protects a route, requiring a valid ADMIN session to proceed.
+// This middleware MUST run AFTER checkUser.
+const requireAdmin = (req, res, next) => {
+    if (!res.locals.isAdmin) {
+        return res.status(403).json({ error: 'Forbidden: Administrator access required.' });
+    }
+    next();
 }
 
 module.exports = { requireAuth, checkUser, requireAdmin };

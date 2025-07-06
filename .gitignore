@@ -1,8 +1,6 @@
-node_modules/
-# Credential files
-sdk-firebase.json
-haus-of-pixels*.json
-data.json
+# Dependencies
+node_modules
 
+# Secrets and generated files
 .env
 public/firebaseConfig.js

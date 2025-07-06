@@ -1,7 +1,7 @@
-function requireEnv(name) {
-  const value = process.env[name];
+function requireEnv(key) {
+  const value = process.env[key];
   if (!value) {
-    throw new Error(`Missing required environment variable ${name}`);
+    throw new Error(`Missing required environment variable: ${key}`);
   }
   return value;
 }

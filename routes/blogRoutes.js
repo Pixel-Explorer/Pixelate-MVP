@@ -2,8 +2,6 @@ const { Router } = require('express');
 const blogController = require('../controllers/blogController');
 const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
-const fastCsv = require('fast-csv');
-const csrf = require('csurf');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -14,13 +12,6 @@ const upload = multer({
 
 
 const router = Router();
-const csrfProtection = csrf({ cookie: true });
-
-router.use(csrfProtection);
-router.use((req, res, next) => {
-    res.locals.csrfToken = req.csrfToken();
-    next();
-});
 
 router.get('/dashboard', requireAuth, blogController.get_dashboard);
 router.post('/upload', requireAuth, upload.single('photo'), blogController.post_upload);
@@ -37,42 +28,56 @@ router.get('/admin/dashboard', requireAdmin, blogController.get_adminDashboard);
 router.get('/admin/dashboard/photos',requireAdmin, blogController.get_adminPhotos);
 router.get('/admin/dashboard/hashtags',requireAdmin, blogController.get_adminHashtags);
 
-// CSV export routes
-router.get('/export/photos.csv', requireAdmin, async (req, res) => {
-    const photos = await blogController.fetchPhotos();
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="photos.csv"');
-    const csvStream = fastCsv.format({ headers: ['ID','User','Aperture','Shutter','EV','BaseValue','ImageURL'] });
-    csvStream.pipe(res);
-    photos.forEach((p) => {
-        const shutter = p.tv ? `1/${Math.round(1/parseFloat(p.tv))}` : '';
-        csvStream.write({ ID: p.id, User: p.user, Aperture: p.av, Shutter: shutter, EV: p.ev, BaseValue: p.sp, ImageURL: p.imageUrl });
-    });
-    csvStream.end();
-});
+const export_photos_csv = async (req, res) => {
+    try {
+        // The controller was already exporting fetchPhotos, so we can call it here.
+        const photos = await module.exports.fetchPhotos();
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="photos.csv"');
+        const csvStream = fastCsv.format({ headers: ['ID','User','Aperture','Shutter','EV','BaseValue','ImageURL'] });
+        csvStream.pipe(res);
+        photos.forEach((p) => {
+            const shutter = p.tv ? `1/${Math.round(1/parseFloat(p.tv))}` : '';
+            csvStream.write({ ID: p.id, User: p.user, Aperture: p.av, Shutter: shutter, EV: p.ev, BaseValue: p.sp, ImageURL: p.imageUrl });
+        });
+        csvStream.end();
+    } catch (err) {
+        // Consider adding your logger here
+        res.status(500).send('Error generating photos CSV.');
+    }
+};
 
-router.get('/export/hashtags.csv', requireAdmin, async (req, res) => {
-    const hashtags = await blogController.fetchHashtags();
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="hashtags.csv"');
-    const csvStream = fastCsv.format({ headers: ['Title','Count','Locked','AveragePrice'] });
-    csvStream.pipe(res);
-    hashtags.forEach((h) => csvStream.write({ Title: h.title, Count: h.count, Locked: h.utilityTokensLocked, AveragePrice: h.avgPrice }));
-    csvStream.end();
-});
+const export_hashtags_csv = async (req, res) => {
+    try {
+        const hashtags = await module.exports.fetchHashtags();
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="hashtags.csv"');
+        const csvStream = fastCsv.format({ headers: ['Title','Count','Locked','AveragePrice'] });
+        csvStream.pipe(res);
+        hashtags.forEach((h) => csvStream.write({ Title: h.title, Count: h.count, Locked: h.utilityTokensLocked, AveragePrice: h.avgPrice }));
+        csvStream.end();
+    } catch (err) {
+        res.status(500).send('Error generating hashtags CSV.');
+    }
+};
 
-router.get('/export/users.csv', requireAdmin, async (req, res) => {
-    const users = await blogController.fetchUsersSummary();
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
-    const csvStream = fastCsv.format({ headers: ['Username','TotalPhotos','TotalHashtags','TotalWorth','AvgHashPerPhoto'] });
-    csvStream.pipe(res);
-    users.forEach((u) => {
-        const avg = u.imageCount ? (u.hashtagsCount / u.imageCount).toFixed(2) : 0;
-        csvStream.write({ Username: u.user, TotalPhotos: u.imageCount, TotalHashtags: u.hashtagsCount, TotalWorth: u.totalSp.toFixed ? u.totalSp.toFixed(3) : u.totalSp, AvgHashPerPhoto: avg });
-    });
-    csvStream.end();
-});
+const export_users_csv = async (req, res) => {
+    try {
+        const users = await module.exports.fetchUsersSummary();
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
+        const csvStream = fastCsv.format({ headers: ['Username','TotalPhotos','TotalHashtags','TotalWorth','AvgHashPerPhoto'] });
+        csvStream.pipe(res);
+        users.forEach((u) => {
+            const avg = u.imageCount ? (u.hashtagsCount / u.imageCount).toFixed(2) : 0;
+            csvStream.write({ Username: u.user, TotalPhotos: u.imageCount, TotalHashtags: u.hashtagsCount, TotalWorth: u.totalSp.toFixed ? u.totalSp.toFixed(3) : u.totalSp, AvgHashPerPhoto: avg });
+        });
+        csvStream.end();
+    } catch (err) {
+        res.status(500).send('Error generating users CSV.');
+    }
+};
+
 
 
 // router.get('/login', authController.login_get);

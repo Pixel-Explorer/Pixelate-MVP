@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const debugRoutes = require('./controllers/debugController');
 const cookieParser = require('cookie-parser');
+const csrf = require('tiny-csrf');
 const helmet = require('helmet');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const firebaseClientConfig = require('./firebaseClientConfig');
@@ -12,77 +13,67 @@ const logger = require('./logger');
 
 const app = express();
 
-// generate Firebase config for client
-const configPath = path.join(__dirname, 'public', 'firebaseConfig.js');
-const configContent = 'export default ' + JSON.stringify(firebaseClientConfig, null, 2) + ';\n';
-fs.writeFileSync(configPath, configContent);
-
 // middleware
 app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      "default-src": ["'self'"],
-      "script-src": [
-        "'self'",
-        "'unsafe-inline'",
-        "'unsafe-eval'",
-        "blob:",
-        "https://cdn.jsdelivr.net",
-        "https://cdnjs.cloudflare.com",
-        "https://fonts.googleapis.com",
-        "https://www.gstatic.com",
-        "https://apis.google.com",
-        "https://*.firebaseio.com",
-        "https://identitytoolkit.googleapis.com",
-        "https://securetoken.googleapis.com",
-        "https://www.googleapis.com",
-        "https://infird.com",
-      ],
-      "script-src-elem": [
-        "'self'",
-        "'unsafe-inline'",
-        "'unsafe-eval'",
-        "blob:",
-        "https://cdn.jsdelivr.net",
-        "https://cdnjs.cloudflare.com",
-        "https://fonts.googleapis.com",
-        "https://www.gstatic.com",
-        "https://apis.google.com",
-        "https://*.firebaseio.com",
-        "https://identitytoolkit.googleapis.com",
-        "https://securetoken.googleapis.com",
-        "https://www.googleapis.com",
-        "https://infird.com",
-      ],
-      "script-src-attr": [
-        "'unsafe-inline'",
-      ],
-      "style-src": [
-        "'self'",
-        "'unsafe-inline'",
-        "https://fonts.googleapis.com",
-        "https://cdn.jsdelivr.net",
-      ],
-      "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
-      "img-src": ["'self'", "data:", "blob:"],
-      "connect-src": [
-        "'self'",
-        "https://firestore.googleapis.com",
-        "https://www.googleapis.com",
-        "https://identitytoolkit.googleapis.com",
-        "https://securetoken.googleapis.com",
-        "https://*.firebaseio.com",
-        "https://www.google-analytics.com",
-        "https://accounts.google.com",
-      ],
-      "frame-src": [
-        "'self'",
-        "https://apis.google.com",
-        "https://*.firebaseapp.com",
-        "https://accounts.google.com",
-      ],
-      "frame-ancestors": ["'none'"],
-      "report-uri": ["/csp-report"],
+  helmet({
+    // This is necessary to allow for Google Sign-In popups.
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+    contentSecurityPolicy: {
+      directives: {
+        // By default, only allow resources from our own origin.
+        "default-src": ["'self'"],
+        // NOTE: 'unsafe-inline' and 'unsafe-eval' are security risks.
+        // They are often required for libraries like Bootstrap or older frameworks.
+        // The long-term goal should be to refactor to remove their necessity.
+        "script-src": [
+          "'self'",
+          "'unsafe-inline'", // For inline event handlers (e.g., onclick)
+          "'unsafe-eval'",   // For eval()-like mechanisms used by some libraries
+          "blob:",           // For scripts created dynamically by libraries
+          "https://cdn.jsdelivr.net", // For CDNs like Bootstrap
+          "https://cdnjs.cloudflare.com", // For js-cookie and other libraries
+          // Firebase and Google Auth domains
+          "https://apis.google.com",
+          "https://www.gstatic.com",
+          "https://*.firebaseio.com",
+          "https://www.googleapis.com",
+          "https://identitytoolkit.googleapis.com",
+        ],
+        // Allow inline event handlers (e.g., onclick). This is needed because
+        // helmet's default policy sets 'script-src-attr' to 'none'.
+        // This is still a security risk and should be removed if possible by
+        // attaching event listeners in your JS code instead.
+        "script-src-attr": ["'unsafe-inline'"],
+        "style-src": [
+          "'self'",
+          "'unsafe-inline'", // For inline styles
+          "https://fonts.googleapis.com",
+          "https://cdn.jsdelivr.net",
+        ],
+        "img-src": [
+          "'self'",
+          "data:", // For base64 encoded images
+          "blob:"  // For images created dynamically in the browser
+        ],
+        "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
+        "connect-src": [
+          "'self'",
+          // Firebase and Google Auth domains
+          "https://firestore.googleapis.com",
+          "https://identitytoolkit.googleapis.com",
+          "https://www.googleapis.com",
+          "https://*.firebaseio.com",
+          "https://www.google-analytics.com",
+          "https://accounts.google.com",
+        ],
+        "frame-src": [
+          "'self'",
+          "https://apis.google.com",
+          "https://accounts.google.com",
+          "https://*.firebaseapp.com",
+        ],
+        "report-uri": ["/csp-report"],
+      }
     }
   })
 );
@@ -95,10 +86,8 @@ app.post('/csp-report', express.json({ type: 'application/csp-report' }), (req, 
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use("/css", express.static(path.join(__dirname, "node_modules/bootstrap/dist/css")))
-app.use("/bootstrap", express.static(path.join(__dirname, "node_modules/bootstrap/dist/js")))
-app.use("/jquery", express.static(path.join(__dirname, "node_modules/jquery/dist")))
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(csrf(process.env.CSRF_SECRET, ['POST']));
 
 // view engine
 app.set('view engine', 'ejs');
