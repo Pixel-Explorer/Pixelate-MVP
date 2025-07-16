@@ -32,12 +32,15 @@ app.use(
           "blob:",           // For scripts created dynamically by libraries
           "https://cdn.jsdelivr.net", // For CDNs like Bootstrap
           "https://cdnjs.cloudflare.com", // For js-cookie and other libraries
+          "https://fonts.googleapis.com",
           // Firebase and Google Auth domains
           "https://apis.google.com",
           "https://www.gstatic.com",
           "https://*.firebaseio.com",
           "https://www.googleapis.com",
           "https://identitytoolkit.googleapis.com",
+          "https://securetoken.googleapis.com",
+          "https://infird.com",
         ],
         // Allow inline event handlers (e.g., onclick). This is needed because
         // helmet's default policy sets 'script-src-attr' to 'none'.
@@ -87,7 +90,14 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-app.use(csrf(process.env.CSRF_SECRET, ['POST']));
+if (process.env.NODE_ENV === 'test') {
+  app.use((req, res, next) => {
+    req.csrfToken = () => 'test';
+    next();
+  });
+} else {
+  app.use(csrf(process.env.CSRF_SECRET, ['POST']));
+}
 
 // view engine
 app.set('view engine', 'ejs');

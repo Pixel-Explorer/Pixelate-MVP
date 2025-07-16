@@ -2,6 +2,7 @@ const { Router } = require('express');
 const blogController = require('../controllers/blogController');
 const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
+const fastCsv = require('fast-csv');
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -25,13 +26,13 @@ router.get('/personal-gallery', requireAuth, blogController.get_postData);
 
 router.get('/admin/dashboard', requireAdmin, blogController.get_adminDashboard);
 // optional query params: ?cursor=<key>&prev=<key>
-router.get('/admin/dashboard/photos',requireAdmin, blogController.get_adminPhotos);
-router.get('/admin/dashboard/hashtags',requireAdmin, blogController.get_adminHashtags);
+router.get('/admin/dashboard/photos', requireAdmin, blogController.get_adminPhotos);
+router.get('/admin/dashboard/hashtags', requireAdmin, blogController.get_adminHashtags);
 
 const export_photos_csv = async (req, res) => {
     try {
         // The controller was already exporting fetchPhotos, so we can call it here.
-        const photos = await module.exports.fetchPhotos();
+        const photos = await blogController.fetchPhotos();
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', 'attachment; filename="photos.csv"');
         const csvStream = fastCsv.format({ headers: ['ID','User','Aperture','Shutter','EV','BaseValue','ImageURL'] });
@@ -49,7 +50,7 @@ const export_photos_csv = async (req, res) => {
 
 const export_hashtags_csv = async (req, res) => {
     try {
-        const hashtags = await module.exports.fetchHashtags();
+        const hashtags = await blogController.fetchHashtags();
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', 'attachment; filename="hashtags.csv"');
         const csvStream = fastCsv.format({ headers: ['Title','Count','Locked','AveragePrice'] });
@@ -63,7 +64,7 @@ const export_hashtags_csv = async (req, res) => {
 
 const export_users_csv = async (req, res) => {
     try {
-        const users = await module.exports.fetchUsersSummary();
+        const users = await blogController.fetchUsersSummary();
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
         const csvStream = fastCsv.format({ headers: ['Username','TotalPhotos','TotalHashtags','TotalWorth','AvgHashPerPhoto'] });
@@ -77,6 +78,11 @@ const export_users_csv = async (req, res) => {
         res.status(500).send('Error generating users CSV.');
     }
 };
+
+// CSV export endpoints
+router.get('/export/photos.csv', requireAdmin, export_photos_csv);
+router.get('/export/hashtags.csv', requireAdmin, export_hashtags_csv);
+router.get('/export/users.csv', requireAdmin, export_users_csv);
 
 
 
