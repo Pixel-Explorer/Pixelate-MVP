@@ -5,3 +5,5 @@ process.env.FIREBASE_STORAGE_BUCKET = 'test-bucket';
 process.env.FIREBASE_MESSAGING_SENDER_ID = 'test-sender';
 process.env.FIREBASE_APP_ID = 'test-app';
 process.env.FIREBASE_MEASUREMENT_ID = 'test-measure';
+process.env.CSRF_SECRET = '12345678901234567890123456789012';
+process.env.COOKIE_SECRET = 'cookie-secret';
