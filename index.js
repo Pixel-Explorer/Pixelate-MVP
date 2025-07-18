@@ -75,6 +75,8 @@ app.use(
           "https://accounts.google.com",
           "https://*.firebaseapp.com",
         ],
+        "frame-ancestors": ["'none'"],
+        "media-src": ["'self'"],
         "report-uri": ["/csp-report"],
       }
     }
