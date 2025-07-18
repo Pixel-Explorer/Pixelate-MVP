@@ -126,6 +126,25 @@ npm test
 
 This project uses Jest for testing, and `NODE_ENV` defaults to `test` when the suite runs.
 
+## Security and Bug Considerations
+
+The Pixelate MVP codebase was adapted from various open-source projects and
+may contain typical issues found in similar applications. When reviewing or
+contributing code, keep the following areas in mind:
+
+- **Authorization** – ensure all API routes and page actions properly check the
+  current user's permissions before performing updates or returning sensitive
+  data.
+- **Input validation** – validate user-supplied values (including file uploads)
+  and escape outputs to reduce the risk of XSS or injection flaws.
+- **Error handling** – avoid leaking stack traces or other internal details in
+  responses. Uncaught exceptions should be logged but not displayed to the
+  client.
+- **Dependencies** – periodically audit the `package.json` dependencies for
+  newer versions and known security advisories.
+- **Image processing** – test edge cases such as very large or malformed image
+  files to ensure the pixelation logic fails gracefully.
+
 
 ## License
 
