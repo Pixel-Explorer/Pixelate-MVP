@@ -106,6 +106,8 @@ includes these directives:
 - `font-src 'self' data: https://fonts.gstatic.com`
 - `img-src 'self' data: blob:`
 - `connect-src 'self' https://firestore.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://www.google-analytics.com https://www.googleapis.com`
+- `frame-src 'self' https://apis.google.com https://accounts.google.com https://*.firebaseapp.com`
+- `media-src 'self'`
 - `frame-ancestors 'none'`
 
 Deploy the hosting configuration with:
