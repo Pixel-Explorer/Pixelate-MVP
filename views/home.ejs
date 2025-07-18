@@ -107,7 +107,7 @@
   
   <%- include('partials/tab-panel'); -%>
   <footer>&#169; House of Pixels OPC Pvt Ltd &#169;</footer>
-  <script>
+  <script nonce="<%= cspNonce %>">
     function disableSubmitButton(form) {
       form.querySelector('button[type="submit"]').disabled = true;
     }

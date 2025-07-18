@@ -39,7 +39,7 @@
     </div>
     <button id="downloadButton" class="btn btn-primary mt-3">Download Data</button>
 
-    <script>
+    <script nonce="<%= cspNonce %>">
         const downloadButton = document.getElementById('downloadButton');
         downloadButton.addEventListener('click', async (event) => {
             event.preventDefault();

@@ -69,9 +69,9 @@ This repository contains a `render.yaml` file for deploying the app to
    credentials) in the Render dashboard.
 5. Click **Apply** to provision the service and start the deployment.
 
-When deployed on Render, responses will not automatically include the
-`Content-Security-Policy` header defined in `firebase.json`. The middleware added
-in `index.js` sets the same policy for every request so be sure to keep it
+When deployed on Render, responses include a `Content-Security-Policy`
+header generated at runtime in `index.js`. The previous static policy in
+`firebase.json` has been removed, so ensure the middleware remains
 enabled when running on Render.
 
 ## Firebase Realtime Database Rules
@@ -95,17 +95,16 @@ firebase deploy --only database
 
 ## Firebase Hosting
 
-The `firebase.json` file configures response headers for hosting, and
-`index.js` sets the same `Content-Security-Policy` header at runtime. The policy
-includes these directives:
+The `Content-Security-Policy` header is now generated dynamically in
+`index.js` using a nonce value. An example of the directives produced at
+runtime is:
 
 - `default-src 'self'`
-- `script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://infird.com`
-- `script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://infird.com`
-- `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net`
+- `script-src 'self' 'nonce-<generated>' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://infird.com`
+- `style-src 'self' 'nonce-<generated>' https://fonts.googleapis.com https://cdn.jsdelivr.net`
 - `font-src 'self' data: https://fonts.gstatic.com`
 - `img-src 'self' data: blob:`
-- `connect-src 'self' https://firestore.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://www.google-analytics.com https://www.googleapis.com`
+- `connect-src 'self' https://firestore.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://www.google-analytics.com https://www.googleapis.com https://accounts.google.com`
 - `frame-src 'self' https://apis.google.com https://accounts.google.com https://*.firebaseapp.com`
 - `media-src 'self'`
 - `frame-ancestors 'none'`

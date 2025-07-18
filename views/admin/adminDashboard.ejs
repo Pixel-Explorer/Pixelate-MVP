@@ -7,7 +7,7 @@
             Users
           </h4>
         <h5 class="m-0 p-0"> (<%= usersCount %>) </h5>
-        <style>
+        <style nonce="<%= cspNonce %>">
             .table tbody tr {
                 user-select: none; /* Disable text selection on table rows */
             }
@@ -56,7 +56,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@3.6.0"></script>
   
   <!-- Get the user data from the table -->
-  <script>
+  <script nonce="<%= cspNonce %>">
     // Get the user data from the table
     const tableRows = document.querySelectorAll('.table tbody tr');
     const users = Array.from(tableRows).map(row => {

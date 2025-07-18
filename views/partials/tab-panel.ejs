@@ -20,7 +20,7 @@
     </div>
   </div>
 </div>
-<style>
+<style nonce="<%= cspNonce %>">
   .tab-buttons {
     display: flex;
     margin-bottom: 10px;
@@ -51,7 +51,7 @@
     opacity: 1;
   }
 </style>
-<script>
+<script nonce="<%= cspNonce %>">
   document.addEventListener('DOMContentLoaded', function () {
     const links = document.querySelectorAll('.tab-link');
     const panes = document.querySelectorAll('.tab-pane');
