@@ -13,10 +13,8 @@ function parseCsp(header) {
   }, {});
 }
 
-const expectedScriptSrc = [
+const expectedHosts = [
   "'self'",
-  "'unsafe-inline'",
-  "'unsafe-eval'",
   'blob:',
   'https://cdn.jsdelivr.net',
   'https://cdnjs.cloudflare.com',
@@ -31,15 +29,26 @@ const expectedScriptSrc = [
 ];
 
 describe('Content Security Policy headers on static assets', () => {
+  function expectPolicy(directives) {
+    expect(directives['script-src']).toBeDefined();
+    // Contains expected hosts
+    expectedHosts.forEach(src => {
+      expect(directives['script-src']).toContain(src);
+    });
+    // Contains a nonce
+    const nonce = directives['script-src'].find(v => v.startsWith("'nonce-"));
+    expect(nonce).toBeDefined();
+    // Does not allow unsafe directives
+    expect(directives['script-src']).not.toContain("'unsafe-inline'");
+    expect(directives['script-src']).not.toContain("'unsafe-eval'");
+  }
+
   it('styles.css has CSP header', async () => {
     const res = await request(app).get('/styles.css');
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-security-policy']).toBeDefined();
     const directives = parseCsp(res.headers['content-security-policy']);
-    expect(directives['script-src']).toBeDefined();
-    expectedScriptSrc.forEach(src => {
-      expect(directives['script-src']).toContain(src);
-    });
+    expectPolicy(directives);
   });
 
   it('downloadCSV.js has CSP header', async () => {
@@ -47,9 +56,6 @@ describe('Content Security Policy headers on static assets', () => {
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-security-policy']).toBeDefined();
     const directives = parseCsp(res.headers['content-security-policy']);
-    expect(directives['script-src']).toBeDefined();
-    expectedScriptSrc.forEach(src => {
-      expect(directives['script-src']).toContain(src);
-    });
+    expectPolicy(directives);
   });
 });

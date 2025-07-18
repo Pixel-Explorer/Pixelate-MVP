@@ -35,7 +35,7 @@
 
 <%- include('partials/footer'); -%>
 
-<script>
+<script nonce="<%= cspNonce %>">
     const loadMoreBtn = document.getElementById('loadMoreBtn');
     let startIndex = 12; // Tracks the starting index of hidden images
     const hiddenCards = document.querySelectorAll('.col-md-4.d-none');

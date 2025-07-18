@@ -7,6 +7,7 @@ const debugRoutes = require('./controllers/debugController');
 const cookieParser = require('cookie-parser');
 const csrf = require('tiny-csrf');
 const helmet = require('helmet');
+const crypto = require('crypto');
 const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const firebaseClientConfig = require('./firebaseClientConfig');
 const logger = require('./logger');
@@ -14,74 +15,33 @@ const logger = require('./logger');
 const app = express();
 
 // middleware
+// Enable standard Helmet protections but set the CSP header manually so we can
+// include a per-request nonce.
 app.use(
   helmet({
-    // This is necessary to allow for Google Sign-In popups.
     crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
-    contentSecurityPolicy: {
-      directives: {
-        // By default, only allow resources from our own origin.
-        "default-src": ["'self'"],
-        // NOTE: 'unsafe-inline' and 'unsafe-eval' are security risks.
-        // They are often required for libraries like Bootstrap or older frameworks.
-        // The long-term goal should be to refactor to remove their necessity.
-        "script-src": [
-          "'self'",
-          "'unsafe-inline'", // For inline event handlers (e.g., onclick)
-          "'unsafe-eval'",   // For eval()-like mechanisms used by some libraries
-          "blob:",           // For scripts created dynamically by libraries
-          "https://cdn.jsdelivr.net", // For CDNs like Bootstrap
-          "https://cdnjs.cloudflare.com", // For js-cookie and other libraries
-          "https://fonts.googleapis.com",
-          // Firebase and Google Auth domains
-          "https://apis.google.com",
-          "https://www.gstatic.com",
-          "https://*.firebaseio.com",
-          "https://www.googleapis.com",
-          "https://identitytoolkit.googleapis.com",
-          "https://securetoken.googleapis.com",
-          "https://infird.com",
-        ],
-        // Allow inline event handlers (e.g., onclick). This is needed because
-        // helmet's default policy sets 'script-src-attr' to 'none'.
-        // This is still a security risk and should be removed if possible by
-        // attaching event listeners in your JS code instead.
-        "script-src-attr": ["'unsafe-inline'"],
-        "style-src": [
-          "'self'",
-          "'unsafe-inline'", // For inline styles
-          "https://fonts.googleapis.com",
-          "https://cdn.jsdelivr.net",
-        ],
-        "img-src": [
-          "'self'",
-          "data:", // For base64 encoded images
-          "blob:"  // For images created dynamically in the browser
-        ],
-        "font-src": ["'self'", "data:", "https://fonts.gstatic.com"],
-        "connect-src": [
-          "'self'",
-          // Firebase and Google Auth domains
-          "https://firestore.googleapis.com",
-          "https://identitytoolkit.googleapis.com",
-          "https://www.googleapis.com",
-          "https://*.firebaseio.com",
-          "https://www.google-analytics.com",
-          "https://accounts.google.com",
-        ],
-        "frame-src": [
-          "'self'",
-          "https://apis.google.com",
-          "https://accounts.google.com",
-          "https://*.firebaseapp.com",
-        ],
-        "frame-ancestors": ["'none'"],
-        "media-src": ["'self'"],
-        "report-uri": ["/csp-report"],
-      }
-    }
+    contentSecurityPolicy: false,
   })
 );
+
+app.use((req, res, next) => {
+  const nonce = crypto.randomBytes(16).toString("base64");
+  res.locals.cspNonce = nonce;
+  const csp = [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://infird.com`,
+    `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com https://cdn.jsdelivr.net`,
+    "img-src 'self' data: blob:",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    "connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com https://*.firebaseio.com https://www.google-analytics.com https://accounts.google.com",
+    "frame-src 'self' https://apis.google.com https://accounts.google.com https://*.firebaseapp.com",
+    "frame-ancestors 'none'",
+    "media-src 'self'",
+    "report-uri /csp-report",
+  ].join('; ');
+  res.setHeader('Content-Security-Policy', csp);
+  next();
+});
 
 // endpoint to log CSP violations
 app.post('/csp-report', express.json({ type: 'application/csp-report' }), (req, res) => {
