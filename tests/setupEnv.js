@@ -7,3 +7,4 @@ process.env.FIREBASE_APP_ID = 'test-app';
 process.env.FIREBASE_MEASUREMENT_ID = 'test-measure';
 process.env.CSRF_SECRET = '12345678901234567890123456789012';
 process.env.COOKIE_SECRET = 'cookie-secret';
+process.env.COOKIE_SECURE = 'false';
