@@ -34,10 +34,15 @@ so make sure to provide your own values before running the server.
    ```bash
    npm install
    ```
-2. (Optional) set the `PORT` environment variable to control the server port. If not set, the app defaults to port `8080`.
-3. (Optional) set `ADMIN_EMAILS` to a comma-separated list of addresses that should have admin access.
-4. (Optional) set `MAX_UPLOAD_BYTES` to override the default 100MB upload limit.
-5. Start the server:
+2. Build vendor assets and generate the Firebase client config:
+   ```bash
+   npm run build:assets
+   npm run build:config
+   ```
+3. (Optional) set the `PORT` environment variable to control the server port. If not set, the app defaults to port `8080`.
+4. (Optional) set `ADMIN_EMAILS` to a comma-separated list of addresses that should have admin access.
+5. (Optional) set `MAX_UPLOAD_BYTES` to override the default 100MB upload limit.
+6. Start the server:
    ```bash
    node index.js
    ```
@@ -110,6 +115,14 @@ runtime is:
 - `frame-src 'self' https://apis.google.com https://accounts.google.com https://*.firebaseapp.com`
 - `media-src 'self'`
 - `frame-ancestors 'none'`
+
+Any inline `<script>` or `<style>` blocks must include the nonce attribute:
+```html
+<script nonce="<%= cspNonce %>"></script>
+<style nonce="<%= cspNonce %>"></style>
+```
+Alternatively move the code into external files served from the `public`
+directory.
 
 Deploy the hosting configuration with:
 
