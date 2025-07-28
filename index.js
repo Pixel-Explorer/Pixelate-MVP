@@ -12,6 +12,17 @@ const { requireAuth, checkUser } = require('./middleware/authMiddleware');
 const firebaseClientConfig = require('./firebaseClientConfig');
 const logger = require('./logger');
 
+function requireEnv(key) {
+  const value = process.env[key];
+  if (!value) {
+    console.error(`Missing required environment variable: ${key}`);
+    process.exit(1);
+  }
+  return value;
+}
+
+const CSRF_SECRET = requireEnv('CSRF_SECRET');
+
 const app = express();
 
 // middleware
@@ -58,7 +69,7 @@ if (process.env.NODE_ENV === 'test') {
     next();
   });
 } else {
-  app.use(csrf(process.env.CSRF_SECRET, ['POST']));
+  app.use(csrf(CSRF_SECRET, ['POST']));
 }
 
 // view engine
