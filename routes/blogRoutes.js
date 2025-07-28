@@ -4,10 +4,12 @@ const { requireAuth, requireAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const fastCsv = require('fast-csv');
 
+const maxUploadBytes = parseInt(process.env.MAX_UPLOAD_BYTES, 10) || 100 * 1024 * 1024;
+
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
-        fileSize: 100 * 1024 * 1024, // 100MB file size limit
+        fileSize: maxUploadBytes, // default 100MB limit
     },
 });
 
