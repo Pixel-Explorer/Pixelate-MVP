@@ -1,4 +1,5 @@
 process.env.NODE_ENV = 'test';
+process.env.COOKIE_SECURE = 'false';
 
 jest.mock('../middleware/authMiddleware', () => ({
   requireAuth: (req, res, next) => next(),
@@ -42,24 +43,28 @@ const app = require('../index');
 describe('POST /login cookie options', () => {
   afterEach(() => {
     process.env.NODE_ENV = 'test';
+    process.env.COOKIE_SECURE = 'false';
   });
 
-  it('omits Secure attribute when not in production', async () => {
+  it('omits Secure attribute when COOKIE_SECURE is false', async () => {
     const res = await request(app)
       .post('/login')
       .send({ idToken: 'abc', email: 'test@example.com', password: 'abcdef' });
     expect(res.statusCode).toBe(200);
     expect(res.headers['set-cookie'][0]).not.toMatch(/Secure/);
     expect(res.headers['set-cookie'][0]).toMatch(/HttpOnly/);
+    expect(res.headers['set-cookie'][0]).toMatch(/SameSite=Lax/);
   });
 
-  it('includes Secure attribute in production', async () => {
-    process.env.NODE_ENV = 'production';
+  it('includes Secure attribute when COOKIE_SECURE is true', async () => {
+    process.env.COOKIE_SECURE = 'true';
     const res = await request(app)
       .post('/login')
       .send({ idToken: 'abc', email: 'test@example.com', password: 'abcdef' });
     expect(res.statusCode).toBe(200);
     expect(res.headers['set-cookie'][0]).toMatch(/Secure/);
+    expect(res.headers['set-cookie'][0]).toMatch(/HttpOnly/);
+    expect(res.headers['set-cookie'][0]).toMatch(/SameSite=Lax/);
   });
 
   it('returns 400 when idToken is missing', async () => {

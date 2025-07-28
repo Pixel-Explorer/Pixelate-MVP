@@ -73,8 +73,8 @@ module.exports.login_post = async (req, res) => {
         .createSessionCookie(idToken.toString(), { expiresIn })
         .then(
             (sessionCookie) => {
-                const options = { maxAge: expiresIn, httpOnly: true };
-                if (process.env.NODE_ENV === 'production') {
+                const options = { maxAge: expiresIn, httpOnly: true, sameSite: 'lax' };
+                if (process.env.COOKIE_SECURE === 'true') {
                     options.secure = true;
                 }
                 res.cookie('session', sessionCookie, options);
