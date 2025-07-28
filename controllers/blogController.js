@@ -535,33 +535,27 @@ async function updateHashtagCount(hashtag, count) {
     await hashtagCountsRef.orderByChild("title").equalTo(hashtag).once('value')
         .then((snapshot) => {
             snapshot.forEach((childSnapshot) => {
-                const currentCount = parseInt(childSnapshot.val().count) || 0;
-                // Increment the count by 1
+                const data = childSnapshot.val();
+                const currentCount = parseInt(data.count) || 0;
+                const currentTokens = parseFloat(data.utilityTokensLocked) || 0;
+
                 const newCount = currentCount + count;
-                // Update the count field
-                childSnapshot.ref.update({
-                    count: newCount.toString()
-                });
-                const newAvg = parseInt(childSnapshot.val().utilityTokensLocked) / newCount;
-                // Update the Average field
-                childSnapshot.ref.update({
-                    avgPrice: newAvg.toString()
-                });
+                let newTokens = currentTokens;
+
                 const prev = parseInt(currentCount / 100);
                 const x = parseInt(newCount / 100);
                 const diff = x - prev;
                 if (diff) {
-                    const currentTokens = parseFloat(childSnapshot.val().utilityTokensLocked) || 0;
-                    const newTokens = currentTokens + diff * 10000;
-                    childSnapshot.ref.update({
-                        utilityTokensLocked: newTokens.toString()
-                    });
-                    const newAverage = newTokens / newCount;
-                    // Update the Average field
-                    childSnapshot.ref.update({
-                        avgPrice: newAverage.toString()
-                    });
+                    newTokens += diff * 10000;
                 }
+
+                const newAvg = newTokens / newCount;
+
+                childSnapshot.ref.update({
+                    count: newCount.toString(),
+                    utilityTokensLocked: newTokens.toString(),
+                    avgPrice: newAvg.toString(),
+                });
             })
         })
 }
@@ -656,3 +650,4 @@ async function fetchUsersSummary() {
 module.exports.fetchPhotos = fetchPhotos;
 module.exports.fetchHashtags = fetchHashtags;
 module.exports.fetchUsersSummary = fetchUsersSummary;
+module.exports.updateHashtagCount = updateHashtagCount;
