@@ -23,6 +23,7 @@ This project is a Node.js application for managing blog posts and photo uploads 
   - `FIREBASE_MESSAGING_SENDER_ID`
   - `FIREBASE_APP_ID`
   - `FIREBASE_MEASUREMENT_ID`
+  - `MAX_UPLOAD_BYTES` (optional upload size limit in bytes; defaults to 104857600)
 
 The application will exit during startup if any required variable is missing,
 so make sure to provide your own values before running the server.
@@ -35,7 +36,8 @@ so make sure to provide your own values before running the server.
    ```
 2. (Optional) set the `PORT` environment variable to control the server port. If not set, the app defaults to port `8080`.
 3. (Optional) set `ADMIN_EMAILS` to a comma-separated list of addresses that should have admin access.
-4. Start the server:
+4. (Optional) set `MAX_UPLOAD_BYTES` to override the default 100MB upload limit.
+5. Start the server:
    ```bash
    node index.js
    ```
