@@ -47,7 +47,7 @@ describe('POST /login cookie options', () => {
   it('omits Secure attribute when not in production', async () => {
     const res = await request(app)
       .post('/login')
-      .send({ idToken: 'abc' });
+      .send({ idToken: 'abc', email: 'test@example.com', password: 'abcdef' });
     expect(res.statusCode).toBe(200);
     expect(res.headers['set-cookie'][0]).not.toMatch(/Secure/);
     expect(res.headers['set-cookie'][0]).toMatch(/HttpOnly/);
@@ -57,7 +57,7 @@ describe('POST /login cookie options', () => {
     process.env.NODE_ENV = 'production';
     const res = await request(app)
       .post('/login')
-      .send({ idToken: 'abc' });
+      .send({ idToken: 'abc', email: 'test@example.com', password: 'abcdef' });
     expect(res.statusCode).toBe(200);
     expect(res.headers['set-cookie'][0]).toMatch(/Secure/);
   });
@@ -65,7 +65,7 @@ describe('POST /login cookie options', () => {
   it('returns 400 when idToken is missing', async () => {
     const res = await request(app)
       .post('/login')
-      .send({});
+      .send({ email: 'test@example.com', password: 'abcdef' });
     expect(res.statusCode).toBe(400);
     expect(res.body.error).toBe('Missing idToken');
   });
