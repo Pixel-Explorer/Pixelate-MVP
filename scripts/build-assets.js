@@ -19,4 +19,4 @@ for (const [src, dest] of Object.entries(assets)) {
   console.log(`  - Copied ${src} to ${path.relative(path.join(__dirname, '..'), destPath)}`);
 }
 
-console.log('Vendor assets copied successfully.');
+console.log("Vendor assets copied successfully.");
