@@ -1,4 +1,4 @@
-Five-Person Development Team Deployment Plan (agent.md)
+Five-Person Development Team Deployment Plan (AGENT.md)
 This document assigns responsibilities to a five-person development team for improving and maintaining the Pixelate-MVP repository. Each agent has distinct tasks based on the deep-dive analysis of the codebase, including bug fixes, feature enhancements, testing, and deployment.
 
 Overview
