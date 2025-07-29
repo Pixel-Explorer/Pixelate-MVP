@@ -124,6 +124,8 @@ Any inline `<script>` or `<style>` blocks must include the nonce attribute:
 Alternatively move the code into external files served from the `public`
 directory.
 
+- Avoid inline `style` attributes; create reusable classes in `public/styles.css`.
+- Always run `npm run build:assets` and `npm run build:config` before starting the server.
 Deploy the hosting configuration with:
 
 ```bash
