@@ -6,7 +6,8 @@
   "scripts": {
     "build:config": "node -r dotenv/config ./scripts/generate-config.js",
     "build:assets": "node ./scripts/build-assets.js",
-    "start": "npm run build:config && npm run build:assets && nodemon -r dotenv/config index.js",
+    "prestart": "npm run build:config",
+    "start": "npm run build:assets && nodemon -r dotenv/config index.js",
     "test": "jest"
   },
   "author": "Anirudh Venkatesan",

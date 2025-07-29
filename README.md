@@ -34,9 +34,11 @@ so make sure to provide your own values before running the server.
    ```bash
    npm install
    ```
-2. Build vendor assets and generate the Firebase client config:
+2. Build vendor assets and (optionally) generate the Firebase client config:
    ```bash
    npm run build:assets
+   # `npm start` runs build:config automatically, but run it manually if
+   # you start the server with `node index.js`.
    npm run build:config
    ```
 3. (Optional) set the `PORT` environment variable to control the server port. If not set, the app defaults to port `8080`.
