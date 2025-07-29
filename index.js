@@ -44,7 +44,7 @@ app.use((req, res, next) => {
     `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com https://cdn.jsdelivr.net`,
     "img-src 'self' data: blob:",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://www.googleapis.com https://*.firebaseio.com https://www.google-analytics.com https://accounts.google.com",
+    "connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.firebaseio.com https://www.google-analytics.com https://accounts.google.com",
     "frame-src 'self' https://apis.google.com https://accounts.google.com https://*.firebaseapp.com",
     "frame-ancestors 'none'",
     "media-src 'self'",
