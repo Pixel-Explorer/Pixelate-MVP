@@ -26,7 +26,7 @@ jest.mock('../controllers/blogController', () => ({
   fetchUsersSummary: jest.fn(() => Promise.resolve([])),
 }));
 
-jest.mock('csurf', () => () => (req, res, next) => { req.csrfToken = () => 'test'; next(); });
+jest.mock('tiny-csrf', () => () => (req, res, next) => { req.csrfToken = () => 'test'; next(); });
 
 const app = require('../index');
 

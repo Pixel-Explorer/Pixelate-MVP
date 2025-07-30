@@ -8,7 +8,7 @@ jest.mock('../middleware/authMiddleware', () => ({
   requireAdmin: (req, res, next) => next(),
 }));
 
-jest.mock('csurf', () => () => (req, res, next) => {
+jest.mock('tiny-csrf', () => () => (req, res, next) => {
   req.csrfToken = () => 'test';
   next();
 });
