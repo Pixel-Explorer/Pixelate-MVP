@@ -311,8 +311,6 @@ footer {
 .icon-folder { margin: 20px; background-color: #FFD752; padding: 10px; border-radius: 25px; box-shadow: inset -1px 1px 3px 0px; }
 .card-title-custom { font-variant-caps: all-petite-caps; font-weight: 900; font-size: xx-large; }
 .card-text-custom { background-color: #cbefcf; box-shadow: inset -1px 1px 2px #1c1c1c; border-radius: 4px; padding: 4px; }
-
-/* Extracted from EJS templates */
 .navbar {
   padding-top: 20px;
   padding-bottom: 20px;
@@ -337,6 +335,7 @@ footer {
   border-color: #0e0d10;
   border-radius: 5px;
 }
+
 
 .tab-buttons {
   display: flex;
@@ -367,6 +366,7 @@ footer {
   display: block;
   opacity: 1;
 }
+
 
 .table tbody tr {
   user-select: none;
