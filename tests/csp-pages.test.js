@@ -4,8 +4,26 @@ const request = require('supertest');
 
 jest.mock('../middleware/authMiddleware', () => ({
   requireAuth: (req, res, next) => next(),
-  checkUser: (req, res, next) => { res.locals.isAdmin = false; res.locals.user = null; next(); },
+  checkUser: (req, res, next) => {
+    res.locals.isAdmin = false;
+    res.locals.user = null;
+    next();
+  },
   requireAdmin: (req, res, next) => next(),
+}));
+
+jest.mock('../controllers/blogController', () => ({
+  get_dashboard: (req, res) => res.sendStatus(200),
+  get_profile: (req, res) => res.sendStatus(200),
+  get_postData: (req, res) => res.sendStatus(200),
+  get_adminDashboard: (req, res) => res.sendStatus(200),
+  get_adminPhotos: (req, res) => res.sendStatus(200),
+  get_adminHashtags: (req, res) => res.sendStatus(200),
+  post_upload: (req, res) => res.sendStatus(200),
+  post_uploadMultiple: (req, res) => res.sendStatus(200),
+  fetchPhotos: jest.fn(() => Promise.resolve([])),
+  fetchHashtags: jest.fn(() => Promise.resolve([])),
+  fetchUsersSummary: jest.fn(() => Promise.resolve([])),
 }));
 
 jest.mock('csurf', () => () => (req, res, next) => { req.csrfToken = () => 'test'; next(); });
@@ -23,7 +41,16 @@ function parseCsp(header) {
 }
 
 describe('CSP headers on pages', () => {
-  const routes = ['/login', '/signup', '/dashboard'];
+  const routes = [
+    '/login',
+    '/signup',
+    '/dashboard',
+    '/profile',
+    '/personal-gallery',
+    '/admin/dashboard',
+    '/admin/dashboard/photos',
+    '/admin/dashboard/hashtags',
+  ];
   routes.forEach(route => {
     it(`${route} has nonce in CSP`, async () => {
       const res = await request(app).get(route);
