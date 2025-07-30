@@ -114,9 +114,12 @@ runtime is:
 - `script-src 'self' 'nonce-<generated>' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://infird.com`
 - `style-src 'self' 'nonce-<generated>' https://fonts.googleapis.com https://cdn.jsdelivr.net`
 - `font-src 'self' data: https://fonts.gstatic.com`
-- `img-src 'self' data: blob:`
+- `img-src 'self' data: blob: https://firebasestorage.googleapis.com https://storage.googleapis.com`
 - `connect-src 'self' https://firestore.googleapis.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://www.google-analytics.com https://www.googleapis.com https://accounts.google.com`
 - `frame-src 'self' https://apis.google.com https://accounts.google.com https://*.firebaseapp.com`
+- `base-uri 'self'`
+- `object-src 'none'`
+- `form-action 'self'`
 - `media-src 'self'`
 - `frame-ancestors 'none'`
 
@@ -127,6 +130,12 @@ Any inline `<script>` or `<style>` blocks must include the nonce attribute:
 ```
 Alternatively move the code into external files served from the `public`
 directory.
+
+- When adding new external scripts, styles or image hosts, update the policy in
+  `index.js` and extend the Jest tests under `tests/` to verify the new source
+  is present in the header.
+- Missing or misspelled `nonce` attributes will cause scripts or styles to be
+  blocked by the browser.
 
 - Avoid inline `style` attributes; create reusable classes in `public/styles.css`.
 - Always run `npm run build:assets` and `npm run build:config` before starting the server.
