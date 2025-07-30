@@ -2,6 +2,8 @@
 
 This project is a Node.js application for managing blog posts and photo uploads using Firebase. It requires Node.js and a Firebase service account for full functionality.
 
+This project uses npm for dependency management. A `package-lock.json` file is provided; Yarn is not required.
+
 ## Prerequisites
 
 - **Node.js**: version 20 or higher is required. You can check your version with `node --version`.
