@@ -16,16 +16,9 @@ function parseCsp(header) {
 const expectedHosts = [
   "'self'",
   'blob:',
-  'https://cdn.jsdelivr.net',
-  'https://cdnjs.cloudflare.com',
-  'https://fonts.googleapis.com',
   'https://www.gstatic.com',
-  'https://apis.google.com',
-  'https://*.firebaseio.com',
-  'https://identitytoolkit.googleapis.com',
-  'https://securetoken.googleapis.com',
-  'https://www.googleapis.com',
-  'https://infird.com',
+  'https://cdnjs.cloudflare.com',
+  'https://cdn.jsdelivr.net',
 ];
 
 describe('Content Security Policy headers on static assets', () => {
