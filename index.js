@@ -40,11 +40,11 @@ app.use((req, res, next) => {
   res.locals.cspNonce = nonce;
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' blob: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com https://www.gstatic.com https://apis.google.com https://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://infird.com`,
+    `script-src 'self' 'nonce-${nonce}' blob: https://www.gstatic.com https://cdnjs.cloudflare.com`,
     `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com https://cdn.jsdelivr.net`,
     "img-src 'self' data: blob: https://firebasestorage.googleapis.com https://storage.googleapis.com",
     "font-src 'self' data: https://fonts.gstatic.com",
-    "connect-src 'self' https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.googleapis.com https://*.firebaseio.com https://www.google-analytics.com https://accounts.google.com",
+    "connect-src 'self' https://firestore.googleapis.com https://www.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.google-analytics.com https://*.firebaseio.com",
     "frame-src 'self' https://apis.google.com https://accounts.google.com https://*.firebaseapp.com",
     "base-uri 'self'",
     "object-src 'none'",
